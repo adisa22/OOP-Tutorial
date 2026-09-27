@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java OOP Tutorial - Interactive Learning</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563EB;
+            --primary-light: #3B82F6;
+            --secondary: #F59E0B;
+            --success: #10B981;
+            --danger: #EF4444;
+            --bg: #F9FAFB;
+            --bg-card: #FFFFFF;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+            --border: #E5E7EB;
+            --code-bg: #1F2937;
+            --code-text: #F3F4F6;
+            --code-string: #86EFAC;
+            --code-keyword: #60A5FA;
+            --code-comment: #9CA3AF;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) {
+                --bg: #111827;
+                --bg-card: #1F2937;
+                --text-primary: #F3F4F6;
+                --text-secondary: #D1D5DB;
+                --border: #374151;
+                --code-bg: #0F172A;
+                --code-text: #F3F4F6;
+            }
+        }
+
+        :root[data-theme="dark"] {
+            --bg: #111827;
+            --bg-card: #1F2937;
+            --text-primary: #F3F4F6;
+            --text-secondary: #D1D5DB;
+            --border: #374151;
+            --code-bg: #0F172A;
+            --code-text: #F3F4F6;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        .container {
+            display: flex;
+            height: 100%;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            padding: 24px 0;
+        }
+
+        .sidebar-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            padding: 0 24px 16px;
+        }
+
+        .nav-item {
+            padding: 12px 24px;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: var(--primary-light);
+            color: white;
+            border-left-color: var(--primary);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+            border-left-color: var(--primary);
+            font-weight: 600;
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 48px;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: 32px;
+            margin-bottom: 16px;
+            color: var(--primary);
+        }
+
+        .intro-text {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            line-height: 1.8;
+        }
+
+        .concept-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .concept-card h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .concept-card p {
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .diagram {
+            background: var(--code-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 16px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: auto;
+        }
+
+        .code-block {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            line-height: 1.6;
+        }
+
+        .code-block code {
+            color: var(--code-text);
+        }
+
+        .keyword { color: var(--code-keyword); font-weight: 600; }
+        .string { color: var(--code-string); }
+        .comment { color: var(--code-comment); font-style: italic; }
+        .class-name { color: #93C5FD; font-weight: 600; }
+        .method { color: #FBBF24; }
+
+        .example-section {
+            background: var(--bg-card);
+            border-left: 4px solid var(--secondary);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 16px 0;
+        }
+
+        .example-label {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--secondary);
+            margin-bottom: 8px;
+        }
+
+        .interactive-demo {
+            background: var(--bg-card);
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 16px 0;
+        }
+
+        .demo-label {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        .output {
+            background: var(--code-bg);
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: var(--code-text);
+            word-break: break-all;
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            margin-right: 8px;
+        }
+
+        button:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .inheritance-diagram {
+            text-align: center;
+        }
+
+        .class-box {
+            background: var(--primary);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin: 8px;
+            display: inline-block;
+            font-weight: 600;
+            min-width: 120px;
+        }
+
+        .parent-box {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .arrow {
+            color: var(--code-text);
+            font-size: 20px;
+            margin: 0 8px;
+        }
+
+        .highlight {
+            background: rgba(245, 158, 11, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .key-point {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--success);
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin: 16px 0;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison-table th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: var(--bg);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .badge-class {
+            background: rgba(37, 99, 235, 0.2);
+            color: var(--primary);
+        }
+
+        .badge-object {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--secondary);
+        }
+
+        .max-width {
+            max-width: 1000px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding: 12px 0;
+                display: flex;
+                overflow-x: auto;
+            }
+
+            .sidebar-title {
+                display: none;
+            }
+
+            .nav-item {
+                padding: 8px 16px;
+                white-space: nowrap;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+            }
+
+            .nav-item:hover,
+            .nav-item.active {
+                border-left: none;
+                border-bottom-color: var(--primary);
+            }
+
+            .content {
+                padding: 24px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-title">📚 Learn OOP</div>
+            <div class="nav-item active" onclick="showSection('intro')">🎯 Introduction</div>
+            <div class="nav-item" onclick="showSection('classes-objects')">📦 Classes & Objects</div>
+            <div class="nav-item" onclick="showSection('encapsulation')">🔒 Encapsulation</div>
+            <div class="nav-item" onclick="showSection('inheritance')">👨‍👧 Inheritance</div>
+            <div class="nav-item" onclick="showSection('polymorphism')">🎭 Polymorphism</div>
+            <div class="nav-item" onclick="showSection('abstraction')">🎨 Abstraction</div>
+        </div>
+
+        <div class="content">
+            <!-- Introduction Section -->
+            <section id="intro" class="section active">
+                <h1>🚀 Welcome to Java OOP</h1>
+                <p class="intro-text">Object-Oriented Programming (OOP) is a way of writing code that mirrors how we think about the real world. Instead of writing long lists of instructions, we organize our code into "objects" that represent real things—like a Dog, a Car, or a Person.</p>
+
+                <div class="concept-card">
+                    <h3>Why Learn OOP?</h3>
+                    <p>✅ <strong>Organized:</strong> Code is grouped logically, making it easier to understand and maintain</p>
+                    <p>✅ <strong>Reusable:</strong> Write code once, use it many times</p>
+                    <p>✅ <strong>Flexible:</strong> Easy to add new features without breaking existing code</p>
+                    <p>✅ <strong>Real-world:</strong> Models real objects and their relationships</p>
+                </div>
+
+                <div class="concept-card">
+                    <h3>The Four Pillars of OOP</h3>
+                    <p>Think of building a house:</p>
+                    <div style="margin-top: 16px;">
+                        <p><span class="badge badge-class">1. Classes & Objects</span> - The blueprint (class) and the actual house (object)</p>
+                        <p><span class="badge badge-class">2. Encapsulation</span> - Hiding internal wiring, keeping some things private</p>
+                        <p><span class="badge badge-class">3. Inheritance</span> - A penthouse is a special kind of house, inheriting house features</p>
+                        <p><span class="badge badge-class">4. Polymorphism</span> - Different actions for different types (apartment vs. house)</p>
+                    </div>
+                </div>
+
+                <div class="concept-card">
+                    <h3>Let's Get Started!</h3>
+                    <p>Use the menu on the left to explore each concept. Each section has explanations, visual diagrams, code examples, and interactive demonstrations.</p>
+                </div>
+            </section>
+
+            <!-- Classes & Objects Section -->
+            <section id="classes-objects" class="section">
+                <h1>📦 Classes and Objects</h1>
+                <p class="intro-text">A <strong>Class</strong> is like a blueprint or template. An <strong>Object</strong> is an actual thing created from that blueprint.</p>
+
+                <div class="concept-card">
+                    <h3>Real-World Analogy</h3>
+                    <p>Think of a cookie cutter (the class) and cookies (the objects):</p>
+                    <ul style="margin-left: 20px; margin-top: 8px;">
+                        <li>The <strong>cookie cutter</strong> is the class—it defines the shape</li>
+                        <li>Each <strong>cookie you make</strong> is an object—each one is a real, edible thing</li>
+                        <li>You can make many cookies from one cutter</li>
+                    </ul>
+                </div>
+
+                <h2>Creating a Class</h2>
+                <div class="concept-card">
+                    <p>Here's a simple Java class representing a <strong>Dog</strong>:</p>
+                    <div class="code-block"><code>
+<span class="keyword">public class</span> <span class="class-name">Dog</span> {
+    <span class="comment">// Properties (what the dog HAS)</span>
+    <span class="keyword">public</span> String name;
+    <span class="keyword">public</span> String breed;
+    <span class="keyword">public int</span> age;
+
+    <span class="comment">// Constructor (how to create a dog)</span>
+    <span class="keyword">public</span> <span class="class-name">Dog</span>(String name, String breed, <span class="keyword">int</span> age) {
+        <span class="keyword">this</span>.name = name;
+        <span class="keyword">this</span>.breed = breed;
+        <span class="keyword">this</span>.age = age;
+    }
+
+    <span class="comment">// Methods (what the dog CAN DO)</span>
+    <span class="keyword">public void</span> <span class="method">bark</span>() {
+        System.out.println(name + <span class="string">" says: Woof! Woof!"</span>);
+    }
+
+    <span class="keyword">public void</span> <span class="method">eat</span>() {
+        System.out.println(name + <span class="string">" is eating..."</span>);
+    }
+}</code></div>
+                </div>
+
+                <div class="example-section">
+                    <div class="example-label">📋 Class Components</div>
+                    <table class="comparison-table">
+                        <tr>
+                            <th>Component</th>
+                            <th>Purpose</th>
+                            <th>Example</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Properties</strong></td>
+                            <td>What the object HAS (characteristics)</td>
+                            <td>name, breed, age</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Constructor</strong></td>
+                            <td>Creates a new object</td>
+                            <td>Dog("Buddy", "Golden Retriever", 3)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Methods</strong></td>
+                            <td>What the object CAN DO (actions)</td>
+                            <td>bark(), eat()</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <h2>Creating Objects (Instances)</h2>
+                <div class="concept-card">
+                    <p>Now let's create actual objects from our Dog class:</p>
+                    <div class="code-block"><code>
+<span class="comment">// Creating object 1</span>
+Dog dog1 = <span class="keyword">new</span> <span class="class-name">Dog</span>(<span class="string">"Buddy"</span>, <span class="string">"Golden Retriever"</span>, 3);
+
+<span class="comment">// Creating object 2</span>
+Dog dog2 = <span class="keyword">new</span> <span class="class-name">Dog</span>(<span class="string">"Max"</span>, <span class="string">"German Shepherd"</span>, 5);
+
+<span class="comment">// Using the objects</span>
+dog1.<span class="method">bark</span>();  <span class="comment">// Output: Buddy says: Woof! Woof!</span>
+dog2.<span class="method">eat</span>();   <span class="comment">// Output: Max is eating...</span></code></div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Key Insight:</strong> The class is the template, but objects are real things with real values. dog1 and dog2 are different objects with different properties!
+                </div>
+
+                <div class="interactive-demo">
+                    <div class="demo-label">🎮 Interactive Demo</div>
+                    <p style="margin-bottom: 16px;">Create a dog and see it in action:</p>
+                    <input type="text" id="dogName" placeholder="Dog name" style="padding: 8px; margin-right: 8px; border-radius: 4px; border: 1px solid var(--border);">
+                    <input type="text" id="dogBreed" placeholder="Breed" style="padding: 8px; margin-right: 8px; border-radius: 4px; border: 1px solid var(--border);">
+                    <button onclick="createDog()">🐕 Create Dog</button>
+                    <div id="dogOutput" class="output" style="display: none;"></div>
+                </div>
+            </section>
+
+            <!-- Encapsulation Section -->
+            <section id="encapsulation" class="section">
+                <h1>🔒 Encapsulation</h1>
+                <p class="intro-text">Encapsulation means <span class="highlight">hiding the internal details</span> of an object and only letting people use what they need. It's like a car—you use the steering wheel and pedals, but you don't need to know how the engine works inside.</p>
+
+                <div class="concept-card">
+                    <h3>Without Encapsulation (❌ Bad)</h3>
+                    <p>Everything is public—anyone can change anything:</p>
+                    <div class="code-block"><code>
+<span class="keyword">public class</span> <span class="class-name">BankAccount</span> {
+    <span class="keyword">public</span> <span class="keyword">double</span> balance;  <span class="comment">// ⚠️ Anyone can change this!</span>
+}
+
+<span class="comment">// Bad: Anyone can change the balance!</span>
+account.balance = <span class="string">-1000</span>;  <span class="comment">// Oops! Negative balance!</span></code></div>
+                </div>
+
+                <div class="concept-card">
+                    <h3>With Encapsulation (✅ Good)</h3>
+                    <p>Hide the details, provide controlled access:</p>
+                    <div class="code-block"><code>
+<span class="keyword">public class</span> <span class="class-name">BankAccount</span> {
+    <span class="keyword">private double</span> balance;  <span class="comment">// Hidden! Can't access directly</span>
+
+    <span class="comment">// Constructor</span>
+    <span class="keyword">public</span> <span class="class-name">BankAccount</span>(<span class="keyword">double</span> initialBalance) {
+        <span class="keyword">this</span>.balance = initialBalance;
+    }
+
+    <span class="comment">// Getter: Read the balance safely</span>
+    <span class="keyword">public double</span> <span class="method">getBalance</span>() {
+        <span class="keyword">return</span> balance;
+    }
+
+    <span class="comment">// Setter: Change balance safely with validation</span>
+    <span class="keyword">public void</span> <span class="method">deposit</span>(<span class="keyword">double</span> amount) {
+        <span class="keyword">if</span> (amount > 0) {
+            balance += amount;
+        }
+    }
+}</code></div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Access Modifiers:</strong>
+                    <ul style="margin-left: 20px; margin-top: 8px;">
+                        <li><span class="badge badge-class">public</span> - Anyone can access</li>
+                        <li><span class="badge badge-class">private</span> - Only the class can access</li>
+                        <li><span class="badge badge-class">protected</span> - Class and subclasses can access</li>
+                    </ul>
+                </div>
+
+                <div class="interactive-demo">
+                    <div class="demo-label">🎮 Interactive Demo</div>
+                    <p style="margin-bottom: 16px;">Try the secure bank account:</p>
+                    <button onclick="createAccount()">💳 Create Account ($1000)</button>
+                    <input type="number" id="amount" placeholder="Amount to deposit" style="padding: 8px; margin: 8px; border-radius: 4px; border: 1px solid var(--border);">
+                    <button onclick="depositMoney()">💰 Deposit</button>
+                    <div id="accountOutput" class="output" style="display: none;"></div>
+                </div>
+            </section>
+
+            <!-- Inheritance Section -->
+            <section id="inheritance" class="section">
+                <h1>👨‍👧 Inheritance</h1>
+                <p class="intro-text">Inheritance lets you create a new class based on an existing class. The new class inherits all the properties and methods of the parent class, and can add its own special features.</p>
+
+                <div class="concept-card">
+                    <h3>Real-World Example</h3>
+                    <p>Think of vehicles:</p>
+                    <ul style="margin-left: 20px; margin-top: 8px;">
+                        <li><strong>Vehicle</strong> (parent) - has wheels, engine, color</li>
+                        <li><strong>Car</strong> (child) - inherits from Vehicle, adds doors, trunk</li>
+                        <li><strong>Truck</strong> (child) - inherits from Vehicle, adds cargo bed</li>
+                    </ul>
+                </div>
+
+                <div class="diagram">
+                    <div style="text-align: center;">
+                        <div class="class-box parent-box">🚗 Vehicle</div>
+                        <div style="margin: 12px 0;">↓ ↓ ↓</div>
+                        <div style="display: flex; justify-content: center; gap: 20px;">
+                            <div class="class-box">🚙 Car</div>
+                            <div class="class-box">🚚 Truck</div>
+                            <div class="class-box">🏍️ Motorcycle</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h2>Parent Class (Superclass)</h2>
+                <div class="concept-card">
+                    <p>The parent class that others will inherit from:</p>
+                    <div class="code-block"><code>
+<span class="keyword">public class</span> <span class="class-name">Animal</span> {
+    <span class="keyword">protected</span> String name;
+    <span class="keyword">protected int</span> age;
+
+    <span class="keyword">public</span> <span class="class-name">Animal</span>(String name, <span class="keyword">int</span> age) {
+        <span class="keyword">this</span>.name = name;
+        <span class="keyword">this</span>.age = age;
+    }
+
+    <span class="keyword">public void</span> <span class="method">sleep</span>() {
+        System.out.println(name + <span class="string">" is sleeping..."</span>);
+    }
+}</code></div>
+                </div>
+
+                <h2>Child Class (Subclass)</h2>
+                <div class="concept-card">
+                    <p>The child class inherits from Animal using <span class="highlight">extends</span>:</p>
+                    <div class="code-block"><code>
+<span class="keyword">public class</span> <span class="class-name">Dog</span> <span class="keyword">extends</span> <span class="class-name">Animal</span> {
+    <span class="keyword">private</span> String breed;
+
+    <span class="keyword">public</span> <span class="class-name">Dog</span>(String name, <span class="keyword">int</span> age, String breed) {
+        <span class="keyword">super</span>(name, age);  <span class="comment">// Call parent constructor</span>
+        <span class="keyword">this</span>.breed = breed;
+    }
+
+    <span class="comment">// New method for Dog</span>
+    <span class="keyword">public void</span> <span class="method">bark</span>() {
+        System.out.println(name + <span class="string">" says: Woof!"</span>);
+    }
+}
+
+<span class="keyword">public class</span> <span class="class-name">Cat</span> <span class="keyword">extends</span> <span class="class-name">Animal</span> {
+    <span class="keyword">public void</span> <span class="method">meow</span>() {
+        System.out.println(name + <span class="string">" says: Meow!"</span>);
+    }
+}</code></div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 What's Inherited?</strong> Dog and Cat automatically get: name, age, and sleep() method from Animal. They can add their own methods too!
+                </div>
+
+                <div class="interactive-demo">
+                    <div class="demo-label">🎮 Interactive Demo</div>
+                    <p style="margin-bottom: 16px;">Create animals and watch inheritance in action:</p>
+                    <button onclick="createAnimals()">🐕 Create Dog & Cat</button>
+                    <div id="animalOutput" class="output" style="display: none;"></div>
+                </div>
+            </section>
+
+            <!-- Polymorphism Section -->
+            <section id="polymorphism" class="section">
+                <h1>🎭 Polymorphism</h1>
+                <p class="intro-text">Polymorphism means <span class="highlight">"many forms"</span>. The same method name can do different things for different objects. For example, all animals can "makeSound()" but each makes a different sound!</p>
+
+                <div class="concept-card">
+                    <h3>Real-World Example</h3>
+                    <p>Imagine a "makeSound()" instruction:</p>
+                    <ul style="margin-left: 20px; margin-top: 8px;">
+                        <li>Dog → Woof!</li>
+                        <li>Cat → Meow!</li>
+                        <li>Cow → Moo!</li>
+                    </ul>
+                    <p>Same method, different results!</p>
+                </div>
+
+                <div class="concept-card">
+                    <h3>How It Works: Method Overriding</h3>
+                    <p>The parent class defines a method, and child classes provide their own version:</p>
+                    <div class="code-block"><code>
+<span class="keyword">public class</span> <span class="class-name">Animal</span> {
+    <span class="keyword">public void</span> <span class="method">makeSound</span>() {
+        System.out.println(<span class="string">"Some generic sound"</span>);
+    }
+}
+
+<span class="keyword">public class</span> <span class="class-name">Dog</span> <span class="keyword">extends</span> <span class="class-name">Animal</span> {
+    <span class="keyword">@Override</span>
+    <span class="keyword">public void</span> <span class="method">makeSound</span>() {
+        System.out.println(<span class="string">"Woof! Woof!"</span>);
+    }
+}
+
+<span class="keyword">public class</span> <span class="class-name">Cat</span> <span class="keyword">extends</span> <span class="class-name">Animal</span> {
+    <span class="keyword">@Override</span>
+    <span class="keyword">public void</span> <span class="method">makeSound</span>() {
+        System.out.println(<span class="string">"Meow!"</span>);
+    }
+}</code></div>
+                </div>
+
+                <div class="concept-card">
+                    <h3>Using Polymorphism</h3>
+                    <p>Here's the magic—you can treat all animals the same way:</p>
+                    <div class="code-block"><code>
+<span class="comment">// Create a list of animals</span>
+Animal[] animals = <span class="keyword">new</span> Animal[3];
+animals[0] = <span class="keyword">new</span> <span class="class-name">Dog</span>();
+animals[1] = <span class="keyword">new</span> <span class="class-name">Cat</span>();
+animals[2] = <span class="keyword">new</span> <span class="class-name">Cow</span>();
+
+<span class="comment">// Call makeSound on each animal</span>
+<span class="keyword">for</span> (Animal animal : animals) {
+    animal.<span class="method">makeSound</span>();  <span class="comment">// Each makes its own sound!</span>
+}</code></div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Power of Polymorphism:</strong> Write once, work with many types! You don't need to know the exact type of animal to call its method.
+                </div>
+
+                <div class="interactive-demo">
+                    <div class="demo-label">🎮 Interactive Demo</div>
+                    <p style="margin-bottom: 16px;">See polymorphism in action:</p>
+                    <button onclick="demonstratePolymorphism()">🐕 🐱 🐮 Make All Sounds</button>
+                    <div id="polymorphismOutput" class="output" style="display: none;"></div>
+                </div>
+            </section>
+
+            <!-- Abstraction Section -->
+            <section id="abstraction" class="section">
+                <h1>🎨 Abstraction</h1>
+                <p class="intro-text">Abstraction means hiding complexity and showing only what's necessary. You define what an object SHOULD do (an interface or abstract class), but don't specify exactly HOW to do it.</p>
+
+                <div class="concept-card">
+                    <h3>Real-World Example</h3>
+                    <p>Think of a remote control:</p>
+                    <ul style="margin-left: 20px; margin-top: 8px;">
+                        <li>You see: Power button, Volume button, Channel buttons</li>
+                        <li>You don't see: Complex circuits, how it actually works</li>
+                        <li>You don't need to know the details to use it!</li>
+                    </ul>
+                </div>
+
+                <div class="concept-card">
+                    <h3>Abstract Class</h3>
+                    <p>An abstract class is like a blueprint that child classes must follow:</p>
+                    <div class="code-block"><code>
+<span class="keyword">public abstract class</span> <span class="class-name">Shape</span> {
+    <span class="comment">// Abstract method - must be implemented by child classes</span>
+    <span class="keyword">public abstract void</span> <span class="method">draw</span>();
+    <span class="keyword">public abstract double</span> <span class="method">calculateArea</span>();
+
+    <span class="comment">// Concrete method - same for all shapes</span>
+    <span class="keyword">public void</span> <span class="method">display</span>() {
+        System.out.println(<span class="string">"Displaying shape..."</span>);
+    }
+}</code></div>
+                </div>
+
+                <div class="concept-card">
+                    <h3>Concrete Implementation</h3>
+                    <p>Child classes MUST implement abstract methods:</p>
+                    <div class="code-block"><code>
+<span class="keyword">public class</span> <span class="class-name">Circle</span> <span class="keyword">extends</span> <span class="class-name">Shape</span> {
+    <span class="keyword">private double</span> radius;
+
+    <span class="keyword">public</span> <span class="class-name">Circle</span>(<span class="keyword">double</span> radius) {
+        <span class="keyword">this</span>.radius = radius;
+    }
+
+    <span class="keyword">@Override</span>
+    <span class="keyword">public void</span> <span class="method">draw</span>() {
+        System.out.println(<span class="string">"Drawing a circle..."</span>);
+    }
+
+    <span class="keyword">@Override</span>
+    <span class="keyword">public double</span> <span class="method">calculateArea</span>() {
+        <span class="keyword">return</span> 3.14 * radius * radius;
+    }
+}
+
+<span class="keyword">public class</span> <span class="class-name">Rectangle</span> <span class="keyword">extends</span> <span class="class-name">Shape</span> {
+    <span class="keyword">private double</span> width, height;
+
+    <span class="keyword">public</span> <span class="class-name">Rectangle</span>(<span class="keyword">double</span> width, <span class="keyword">double</span> height) {
+        <span class="keyword">this</span>.width = width;
+        <span class="keyword">this</span>.height = height;
+    }
+
+    <span class="keyword">@Override</span>
+    <span class="keyword">public void</span> <span class="method">draw</span>() {
+        System.out.println(<span class="string">"Drawing a rectangle..."</span>);
+    }
+
+    <span class="keyword">@Override</span>
+    <span class="keyword">public double</span> <span class="method">calculateArea</span>() {
+        <span class="keyword">return</span> width * height;
+    }
+}</code></div>
+                </div>
+
+                <div class="key-point">
+                    <strong>💡 Why Abstraction?</strong>
+                    <ul style="margin-left: 20px; margin-top: 8px;">
+                        <li>Forces consistent structure across classes</li>
+                        <li>Hides implementation complexity</li>
+                        <li>Makes code flexible and extensible</li>
+                    </ul>
+                </div>
+
+                <div class="interactive-demo">
+                    <div class="demo-label">🎮 Interactive Demo</div>
+                    <p style="margin-bottom: 16px;">See abstraction in action with shapes:</p>
+                    <button onclick="demonstrateAbstraction()">📐 Draw Shapes & Calculate Areas</button>
+                    <div id="abstractionOutput" class="output" style="display: none;"></div>
+                </div>
+
+                <div class="concept-card" style="margin-top: 32px;">
+                    <h3>🎓 Congratulations!</h3>
+                    <p>You've now learned all four pillars of OOP! These concepts work together to make your code organized, reusable, and maintainable. Practice creating different classes and objects to solidify your understanding.</p>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.classList.remove('active'));
+
+            // Remove active class from all nav items
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+
+            // Add active class to clicked nav item
+            event.target.classList.add('active');
+        }
+
+        // Interactive Demos
+        function createDog() {
+            const name = document.getElementById('dogName').value;
+            const breed = document.getElementById('dogBreed').value;
+
+            if (!name || !breed) {
+                alert('Please enter dog name and breed!');
+                return;
+            }
+
+            const output = document.getElementById('dogOutput');
+            output.innerHTML = `
+<strong>🐕 Dog Created!</strong><br>
+Name: ${name}<br>
+Breed: ${breed}<br>
+---<br>
+${name}: Woof! Woof!<br>
+${name} is eating...
+            `;
+            output.style.display = 'block';
+        }
+
+        function createAccount() {
+            const output = document.getElementById('accountOutput');
+            output.innerHTML = `
+<strong>💳 Account Created!</strong><br>
+Initial Balance: $1000.00<br>
+Status: Account is secure and working!
+            `;
+            output.style.display = 'block';
+        }
+
+        function depositMoney() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            const output = document.getElementById('accountOutput');
+
+            if (isNaN(amount) || amount <= 0) {
+                output.innerHTML = `❌ Error: Invalid amount. Please enter a positive number.`;
+                output.style.display = 'block';
+                return;
+            }
+
+            const newBalance = 1000 + amount;
+            output.innerHTML = `
+<strong>✅ Deposit Successful!</strong><br>
+Deposited: $${amount.toFixed(2)}<br>
+New Balance: $${newBalance.toFixed(2)}<br>
+<br>
+<strong>Notice:</strong> The balance is hidden (private)!<br>
+You can only deposit through the safe method.
+            `;
+            output.style.display = 'block';
+        }
+
+        function createAnimals() {
+            const output = document.getElementById('animalOutput');
+            output.innerHTML = `
+<strong>🐕 Dog Created: "Buddy"</strong><br>
+From class: Dog (extends Animal)<br>
+Inherited methods: sleep()<br>
+Special methods: bark()<br>
+<br>
+Buddy is sleeping...<br>
+Buddy says: Woof! Woof!<br>
+<br>
+<strong>🐱 Cat Created: "Whiskers"</strong><br>
+From class: Cat (extends Animal)<br>
+Inherited methods: sleep()<br>
+Special methods: meow()<br>
+<br>
+Whiskers is sleeping...<br>
+Whiskers says: Meow!<br>
+<br>
+✅ Both inherited "sleep()" from Animal!
+            `;
+            output.style.display = 'block';
+        }
+
+        function demonstratePolymorphism() {
+            const output = document.getElementById('polymorphismOutput');
+            output.innerHTML = `
+<strong>🎭 Polymorphism in Action!</strong><br>
+<br>
+Calling makeSound() on different animals:<br>
+<br>
+Dog.makeSound() → 🐕 Woof! Woof!<br>
+Cat.makeSound() → 🐱 Meow!<br>
+Cow.makeSound() → 🐄 Moo!<br>
+<br>
+<strong>Key Point:</strong> Same method name, different behaviors!<br>
+We can loop through all animals and call makeSound()<br>
+without knowing exactly what type each one is.
+            `;
+            output.style.display = 'block';
+        }
+
+        function demonstrateAbstraction() {
+            const output = document.getElementById('abstractionOutput');
+            output.innerHTML = `
+<strong>🎨 Abstraction in Action!</strong><br>
+<br>
+<strong>Circle(radius=5)</strong><br>
+Drawing a circle...<br>
+Area: 78.50 square units<br>
+<br>
+<strong>Rectangle(width=4, height=6)</strong><br>
+Drawing a rectangle...<br>
+Area: 24.00 square units<br>
+<br>
+<strong>What's Hidden?</strong><br>
+✓ Calculation complexity (hidden)<br>
+✓ Drawing implementation (hidden)<br>
+✓ How each shape stores data (hidden)<br>
+<br>
+<strong>What's Shown?</strong><br>
+✓ Simple methods: draw() and calculateArea()<br>
+✓ Easy to use, no need to understand internals!
+            `;
+            output.style.display = 'block';
+        }
+
+        // Smooth scroll to section
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.querySelector('.content').scrollTop = 0;
+                });
+            });
+        });
+    </script>
+</body>
+</html>
