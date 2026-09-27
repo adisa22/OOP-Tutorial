@@ -1,1024 +1,1648 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Java OOP Tutorial - Interactive Learning</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Java Object Semantics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+:root{
+  color-scheme: light;
+  --paper:#EEF2F2;
+  --surface:#FBFDFD;
+  --surface-2:#E3EAEA;
+  --ink:#10181B;
+  --ink-2:#414F53;
+  --ink-3:#6B7B80;
+  --rule:#CBD6D6;
+  --rule-strong:#A8B8B9;
+  --accent:#0C6E6A;
+  --accent-ink:#095551;
+  --accent-wash:#D8E8E7;
+  --signal:#B23D0B;
+  --signal-wash:#F6E3D8;
+  --good:#1F6B3F;
+  --good-wash:#DAE9DF;
+  --code-bg:#101A1C;
+  --code-ink:#DCE7E7;
+  --c-key:#7FD1C9;
+  --c-str:#C9C07A;
+  --c-com:#7E9092;
+  --c-type:#9FC4E8;
+  --c-meth:#E3B177;
+  --c-num:#D39BB4;
+  --measure:68ch;
+  --rail:16.5rem;
+  --bar:3.25rem;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --paper:#0B1113;
+    --surface:#121A1D;
+    --surface-2:#1B2528;
+    --ink:#E4EDED;
+    --ink-2:#B2C1C2;
+    --ink-3:#839597;
+    --rule:#263437;
+    --rule-strong:#3A4C50;
+    --accent:#45BFB5;
+    --accent-ink:#6FD3CA;
+    --accent-wash:#16302F;
+    --signal:#EE8B4F;
+    --signal-wash:#341F14;
+    --good:#66BE87;
+    --good-wash:#162A1D;
+    --code-bg:#080E10;
+    --code-ink:#DCE7E7;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --paper:#0B1113;
+  --surface:#121A1D;
+  --surface-2:#1B2528;
+  --ink:#E4EDED;
+  --ink-2:#B2C1C2;
+  --ink-3:#839597;
+  --rule:#263437;
+  --rule-strong:#3A4C50;
+  --accent:#45BFB5;
+  --accent-ink:#6FD3CA;
+  --accent-wash:#16302F;
+  --signal:#EE8B4F;
+  --signal-wash:#341F14;
+  --good:#66BE87;
+  --good-wash:#162A1D;
+  --code-bg:#080E10;
+  --code-ink:#DCE7E7;
+}
 
-        :root {
-            --primary: #2563EB;
-            --primary-light: #3B82F6;
-            --secondary: #F59E0B;
-            --success: #10B981;
-            --danger: #EF4444;
-            --bg: #F9FAFB;
-            --bg-card: #FFFFFF;
-            --text-primary: #1F2937;
-            --text-secondary: #6B7280;
-            --border: #E5E7EB;
-            --code-bg: #1F2937;
-            --code-text: #F3F4F6;
-            --code-string: #86EFAC;
-            --code-keyword: #60A5FA;
-            --code-comment: #9CA3AF;
-        }
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Source Serif 4",Georgia,"Times New Roman",serif;
+  font-size:17px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+img{max-width:100%}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
 
-        @media (prefers-color-scheme: dark) {
-            :root:not([data-theme="light"]) {
-                --bg: #111827;
-                --bg-card: #1F2937;
-                --text-primary: #F3F4F6;
-                --text-secondary: #D1D5DB;
-                --border: #374151;
-                --code-bg: #0F172A;
-                --code-text: #F3F4F6;
-            }
-        }
+/* ---------- top bar ---------- */
+.bar{
+  position:sticky;
+  top:env(safe-area-inset-top,0px);
+  z-index:40;
+  height:var(--bar);
+  display:flex;align-items:center;gap:.9rem;
+  padding:0 clamp(1rem,3vw,2rem);
+  background:var(--paper);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--rule);
+}
+@supports (background: color-mix(in srgb, red 50%, transparent)){
+  .bar{background:color-mix(in srgb, var(--paper) 88%, transparent)}
+}
+.bar h1{
+  font-family:Archivo,system-ui,sans-serif;
+  font-size:.95rem;font-weight:700;letter-spacing:-.005em;
+  margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.bar .course{
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:.66rem;font-weight:700;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--accent);
+  border:1px solid var(--accent);border-radius:3px;
+  padding:.18rem .4rem;white-space:nowrap;
+}
+.bar .spacer{flex:1}
+.tbtn{
+  font-family:"JetBrains Mono",monospace;font-size:.68rem;font-weight:500;
+  letter-spacing:.06em;text-transform:uppercase;
+  background:transparent;color:var(--ink-2);
+  border:1px solid var(--rule-strong);border-radius:4px;
+  padding:.35rem .55rem;cursor:pointer;white-space:nowrap;
+}
+.tbtn:hover{color:var(--accent);border-color:var(--accent)}
 
-        :root[data-theme="dark"] {
-            --bg: #111827;
-            --bg-card: #1F2937;
-            --text-primary: #F3F4F6;
-            --text-secondary: #D1D5DB;
-            --border: #374151;
-            --code-bg: #0F172A;
-            --code-text: #F3F4F6;
-        }
+/* ---------- shell ---------- */
+.shell{
+  display:grid;
+  grid-template-columns:var(--rail) minmax(0,1fr);
+  gap:clamp(1.5rem,4vw,3.5rem);
+  max-width:74rem;
+  margin:0 auto;
+  padding:0 clamp(1rem,3vw,2rem);
+}
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--text-primary);
-            line-height: 1.6;
-            transition: background-color 0.3s, color 0.3s;
-        }
+/* ---------- contents rail ---------- */
+.rail{
+  position:sticky;
+  top:calc(var(--bar) + env(safe-area-inset-top,0px));
+  align-self:start;
+  max-height:calc(100vh - var(--bar) - 2rem);
+  overflow-y:auto;
+  padding:1.6rem 0 2rem;
+}
+.rail-h{
+  font-family:"JetBrains Mono",monospace;
+  font-size:.64rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-3);margin:0 0 .75rem;
+}
+.rail ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.rail a{
+  display:grid;grid-template-columns:1.85rem 1fr;
+  gap:.15rem;align-items:baseline;
+  padding:.42rem 0;
+  text-decoration:none;color:var(--ink-2);
+  font-size:.875rem;line-height:1.35;
+  border-left:2px solid transparent;padding-left:.7rem;
+}
+.rail a .n{
+  font-family:"JetBrains Mono",monospace;
+  font-size:.66rem;font-weight:500;color:var(--ink-3);
+  font-variant-numeric:tabular-nums;
+}
+.rail a:hover{color:var(--accent)}
+.rail a[aria-current="true"]{
+  color:var(--accent-ink);font-weight:600;
+  border-left-color:var(--accent);
+}
+.rail a[aria-current="true"] .n{color:var(--accent)}
 
-        html, body {
-            height: 100%;
-        }
+/* ---------- main ---------- */
+main{padding:1.6rem 0 6rem;min-width:0}
+.lede{max-width:var(--measure)}
+.lede p{color:var(--ink-2);font-size:1.075rem}
+.doc-title{
+  font-family:Archivo,system-ui,sans-serif;
+  font-size:clamp(1.9rem,4.4vw,2.7rem);
+  font-weight:700;line-height:1.08;letter-spacing:-.022em;
+  margin:.4rem 0 .5rem;text-wrap:balance;
+}
+.doc-sub{
+  font-family:"JetBrains Mono",monospace;
+  font-size:.68rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-3);margin:0;
+}
+.prereq{
+  max-width:var(--measure);
+  border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
+  padding:.9rem 0;margin:1.75rem 0 0;
+  display:flex;flex-wrap:wrap;gap:.35rem 1.4rem;
+  font-family:"JetBrains Mono",monospace;font-size:.7rem;color:var(--ink-3);
+}
+.prereq b{color:var(--ink-2);font-weight:500}
 
-        .container {
-            display: flex;
-            height: 100%;
-        }
+section.ch{scroll-margin-top:calc(var(--bar) + 1.25rem);padding-top:3.2rem}
+.ch-head{max-width:var(--measure);margin-bottom:1.4rem}
+.ch-num{
+  font-family:"JetBrains Mono",monospace;
+  font-size:.7rem;font-weight:700;letter-spacing:.16em;color:var(--accent);
+  font-variant-numeric:tabular-nums;
+}
+.ch h2{
+  font-family:Archivo,system-ui,sans-serif;
+  font-size:clamp(1.35rem,2.8vw,1.75rem);
+  font-weight:700;line-height:1.14;letter-spacing:-.016em;
+  margin:.25rem 0 0;text-wrap:balance;
+}
+.ch h3{
+  font-family:Archivo,system-ui,sans-serif;
+  font-size:1.02rem;font-weight:600;letter-spacing:-.008em;
+  margin:2.1rem 0 .55rem;max-width:var(--measure);text-wrap:balance;
+}
+.ch p,.ch ul,.ch ol.prose{max-width:var(--measure)}
+.ch p{margin:0 0 .9rem}
+.ch ul,.ch ol.prose{margin:0 0 1rem;padding-left:1.15rem}
+.ch li{margin-bottom:.4rem}
+strong{font-weight:600}
+em{font-style:italic}
+a.ref{color:var(--accent-ink);text-decoration:none;border-bottom:1px solid var(--accent-wash)}
+a.ref:hover{border-bottom-color:var(--accent)}
 
-        .sidebar {
-            width: 280px;
-            background: var(--bg-card);
-            border-right: 1px solid var(--border);
-            overflow-y: auto;
-            padding: 24px 0;
-        }
+code:not(pre code){
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:.855em;
+  background:var(--surface-2);
+  padding:.1em .34em;border-radius:3px;
+  color:var(--ink);
+}
 
-        .sidebar-title {
-            font-family: 'Poppins', sans-serif;
-            font-size: 14px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--text-secondary);
-            padding: 0 24px 16px;
-        }
+/* ---------- typed blocks ---------- */
+.block{
+  max-width:var(--measure);
+  margin:1.5rem 0;
+  border-left:2px solid var(--rule-strong);
+  padding:.15rem 0 .15rem 1.1rem;
+}
+.block > .tag{
+  font-family:"JetBrains Mono",monospace;
+  font-size:.64rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--ink-3);display:block;margin-bottom:.45rem;
+}
+.block p:last-child{margin-bottom:0}
+.block.spec{border-left-color:var(--accent)}
+.block.spec > .tag{color:var(--accent)}
+.block.pitfall{border-left-color:var(--signal);background:var(--signal-wash);padding:.8rem 1rem;border-radius:0 4px 4px 0}
+.block.pitfall > .tag{color:var(--signal)}
+.block.rule{border-left-color:var(--good)}
+.block.rule > .tag{color:var(--good)}
 
-        .nav-item {
-            padding: 12px 24px;
-            cursor: pointer;
-            border-left: 3px solid transparent;
-            transition: all 0.2s;
-            color: var(--text-secondary);
-            font-size: 14px;
-            font-weight: 500;
-        }
+/* ---------- code ---------- */
+.code{
+  margin:1.1rem 0;
+  max-width:min(56rem,100%);
+  background:var(--code-bg);
+  border:1px solid var(--rule);
+  border-radius:5px;
+  overflow:hidden;
+}
+.code figcaption{
+  font-family:"JetBrains Mono",monospace;
+  font-size:.64rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+  color:#8FA3A5;
+  padding:.5rem .85rem;
+  border-bottom:1px solid #222F31;
+  background:#0B1416;
+}
+.code pre{
+  margin:0;padding:.9rem .95rem;
+  overflow-x:auto;
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:.795rem;line-height:1.62;
+  color:var(--code-ink);
+  tab-size:4;
+}
+/* code tokens are scoped to pre so they cannot collide with rail/trace classes */
+pre .k{color:var(--c-key)}
+pre .s{color:var(--c-str)}
+pre .c{color:var(--c-com);font-style:italic}
+pre .t{color:var(--c-type)}
+pre .m{color:var(--c-meth)}
+pre .n{color:var(--c-num)}
 
-        .nav-item:hover {
-            background: var(--primary-light);
-            color: white;
-            border-left-color: var(--primary);
-        }
+/* ---------- tables ---------- */
+.tw{max-width:min(56rem,100%);overflow-x:auto;margin:1.2rem 0;border:1px solid var(--rule);border-radius:5px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.855rem}
+th,td{text-align:left;padding:.55rem .75rem;border-bottom:1px solid var(--rule);vertical-align:top}
+thead th{
+  font-family:"JetBrains Mono",monospace;
+  font-size:.63rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);background:var(--surface-2);white-space:nowrap;
+}
+tbody tr:last-child td{border-bottom:none}
+td code{white-space:nowrap}
+.yes{color:var(--good);font-weight:600}
+.no{color:var(--signal);font-weight:600}
 
-        .nav-item.active {
-            background: var(--primary);
-            color: white;
-            border-left-color: var(--primary);
-            font-weight: 600;
-        }
+/* ---------- widgets ---------- */
+.widget{
+  max-width:min(56rem,100%);
+  margin:1.5rem 0;
+  background:var(--surface);
+  border:1px solid var(--rule-strong);
+  border-radius:6px;
+  overflow:hidden;
+}
+.widget-h{
+  display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap;
+  padding:.7rem .9rem;
+  border-bottom:1px solid var(--rule);
+  background:var(--surface-2);
+}
+.widget-h .tag{
+  font-family:"JetBrains Mono",monospace;
+  font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent);
+}
+.widget-h .ttl{font-family:Archivo,sans-serif;font-size:.9rem;font-weight:600}
+.widget-b{padding:.9rem}
+.widget-b > p:first-child{margin-top:0}
+.widget-b p{max-width:none}
 
-        .content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 48px;
-        }
+.ctrls{display:flex;flex-wrap:wrap;gap:.9rem;margin-bottom:.9rem}
+.ctrl{display:flex;flex-direction:column;gap:.28rem;min-width:0}
+.ctrl > span{
+  font-family:"JetBrains Mono",monospace;
+  font-size:.61rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);
+}
+select,input[type=text],input[type=number]{
+  font-family:"JetBrains Mono",monospace;font-size:.8rem;
+  background:var(--paper);color:var(--ink);
+  border:1px solid var(--rule-strong);border-radius:4px;
+  padding:.38rem .5rem;min-width:8.5rem;max-width:100%;
+}
+.btn{
+  font-family:"JetBrains Mono",monospace;font-size:.72rem;font-weight:500;
+  letter-spacing:.05em;text-transform:uppercase;
+  background:var(--accent);color:#fff;
+  border:1px solid var(--accent);border-radius:4px;
+  padding:.42rem .8rem;cursor:pointer;
+}
+.btn:hover{background:var(--accent-ink);border-color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:var(--ink-2);border-color:var(--rule-strong)}
+.btn.ghost:hover{color:var(--accent);border-color:var(--accent);background:transparent}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btnrow{display:flex;gap:.45rem;flex-wrap:wrap;align-items:center}
 
-        .section {
-            display: none;
-            animation: fadeIn 0.3s ease-in;
-        }
+.verdict{
+  font-family:"JetBrains Mono",monospace;font-size:.78rem;line-height:1.6;
+  background:var(--code-bg);color:var(--code-ink);
+  border-radius:5px;padding:.75rem .85rem;margin-top:.9rem;
+  overflow-x:auto;
+}
+.verdict .lbl{color:#8FA3A5;font-size:.63rem;letter-spacing:.11em;text-transform:uppercase;display:block;margin-bottom:.3rem}
+.verdict .ok{color:#7FD1C9;font-weight:700}
+.verdict .bad{color:#EE8B4F;font-weight:700}
+.verdict hr{border:none;border-top:1px solid #222F31;margin:.6rem 0}
+.verdict .why{color:#B2C1C2;font-family:"Source Serif 4",serif;font-size:.86rem;line-height:1.55}
 
-        .section.active {
-            display: block;
-        }
+/* trace */
+.trace{list-style:none;margin:0;padding:0;font-family:"JetBrains Mono",monospace;font-size:.775rem}
+.trace li{
+  display:grid;grid-template-columns:1.9rem 1fr;gap:.6rem;
+  padding:.36rem .5rem;border-radius:3px;color:var(--ink-3);
+}
+.trace li .i{font-variant-numeric:tabular-nums;color:var(--ink-3)}
+.trace li.done{color:var(--ink-2)}
+.trace li.now{background:var(--accent-wash);color:var(--accent-ink);font-weight:700}
+.trace li.now .i{color:var(--accent-ink)}
+.step-note{
+  margin-top:.7rem;padding:.6rem .75rem;border-left:2px solid var(--accent);
+  background:var(--surface-2);border-radius:0 4px 4px 0;font-size:.9rem;color:var(--ink-2);
+}
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+/* puzzle */
+.puz{margin:0}
+.puz + .puz{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--rule)}
+.answer{
+  margin-top:.8rem;padding:.75rem .85rem;
+  background:var(--surface-2);border-radius:5px;border-left:2px solid var(--good);
+  font-size:.92rem;color:var(--ink-2);
+}
+.answer .out{
+  font-family:"JetBrains Mono",monospace;font-size:.78rem;font-weight:700;
+  color:var(--ink);display:block;margin-bottom:.45rem;
+}
+.answer p{margin:0 0 .6rem}
+.answer p:last-child{margin-bottom:0}
 
-        h1 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 32px;
-            font-weight: 800;
-            margin-bottom: 16px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+/* checkbox grid */
+.toggles{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:.5rem .9rem;margin-bottom:.4rem}
+.tg{display:flex;gap:.5rem;align-items:flex-start;font-size:.865rem;color:var(--ink-2);cursor:pointer}
+.tg input{margin:.3rem 0 0;accent-color:var(--accent);flex:none}
+.tg b{color:var(--ink);font-weight:600;font-family:"JetBrains Mono",monospace;font-size:.78rem}
 
-        h2 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 24px;
-            font-weight: 700;
-            margin-top: 32px;
-            margin-bottom: 16px;
-            color: var(--primary);
-        }
+/* variance rows */
+.vlist{margin:0;padding:0;list-style:none;border:1px solid var(--rule);border-radius:5px;overflow:hidden}
+.vlist li{border-bottom:1px solid var(--rule)}
+.vlist li:last-child{border-bottom:none}
+.vrow{
+  width:100%;display:flex;gap:.7rem;align-items:center;text-align:left;
+  background:var(--surface);border:none;cursor:pointer;
+  padding:.6rem .75rem;color:var(--ink);
+  font-family:"JetBrains Mono",monospace;font-size:.755rem;line-height:1.5;
+}
+.vrow:hover{background:var(--surface-2)}
+.vrow .pill{
+  flex:none;font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:.16rem .38rem;border-radius:3px;min-width:5.4rem;text-align:center;
+}
+.pill.ok{background:var(--good-wash);color:var(--good)}
+.pill.err{background:var(--signal-wash);color:var(--signal)}
+.pill.rt{background:var(--accent-wash);color:var(--accent-ink)}
+.vrow .snip{flex:1;min-width:0;overflow-x:auto;white-space:pre}
+.vwhy{
+  padding:.15rem .75rem .75rem calc(.75rem + 6.1rem);
+  font-size:.885rem;color:var(--ink-2);background:var(--surface);
+}
+.vwhy code{font-size:.8em}
 
-        .intro-text {
-            font-size: 16px;
-            color: var(--text-secondary);
-            margin-bottom: 24px;
-            line-height: 1.8;
-        }
+/* exercises */
+.ex{max-width:var(--measure);margin:1.4rem 0 0}
+.ex ol{padding-left:1.35rem;margin:.5rem 0 0}
+.ex li{margin-bottom:.7rem;color:var(--ink-2)}
+.ex li b{color:var(--ink)}
 
-        .concept-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
+footer{
+  max-width:74rem;margin:0 auto;
+  padding:2rem clamp(1rem,3vw,2rem) 3rem;
+  border-top:1px solid var(--rule);
+  font-family:"JetBrains Mono",monospace;font-size:.7rem;color:var(--ink-3);
+  display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;
+}
 
-        .concept-card h3 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: var(--text-primary);
-        }
-
-        .concept-card p {
-            margin-bottom: 12px;
-            color: var(--text-secondary);
-            line-height: 1.8;
-        }
-
-        .diagram {
-            background: var(--code-bg);
-            border-radius: 8px;
-            padding: 20px;
-            margin: 16px 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow-x: auto;
-        }
-
-        .code-block {
-            background: var(--code-bg);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 16px;
-            margin: 16px 0;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            overflow-x: auto;
-            line-height: 1.6;
-        }
-
-        .code-block code {
-            color: var(--code-text);
-        }
-
-        .keyword { color: var(--code-keyword); font-weight: 600; }
-        .string { color: var(--code-string); }
-        .comment { color: var(--code-comment); font-style: italic; }
-        .class-name { color: #93C5FD; font-weight: 600; }
-        .method { color: #FBBF24; }
-
-        .example-section {
-            background: var(--bg-card);
-            border-left: 4px solid var(--secondary);
-            border-radius: 8px;
-            padding: 20px;
-            margin: 16px 0;
-        }
-
-        .example-label {
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--secondary);
-            margin-bottom: 8px;
-        }
-
-        .interactive-demo {
-            background: var(--bg-card);
-            border: 2px solid var(--primary);
-            border-radius: 8px;
-            padding: 20px;
-            margin: 16px 0;
-        }
-
-        .demo-label {
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--primary);
-            margin-bottom: 12px;
-        }
-
-        .output {
-            background: var(--code-bg);
-            border-radius: 6px;
-            padding: 12px;
-            margin-top: 12px;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            color: var(--code-text);
-            word-break: break-all;
-        }
-
-        button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
-            margin-right: 8px;
-        }
-
-        button:hover {
-            background: var(--primary-light);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        .icon {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            margin-right: 8px;
-            vertical-align: middle;
-        }
-
-        .inheritance-diagram {
-            text-align: center;
-        }
-
-        .class-box {
-            background: var(--primary);
-            color: white;
-            padding: 12px 16px;
-            border-radius: 6px;
-            margin: 8px;
-            display: inline-block;
-            font-weight: 600;
-            min-width: 120px;
-        }
-
-        .parent-box {
-            background: var(--secondary);
-            color: white;
-        }
-
-        .arrow {
-            color: var(--code-text);
-            font-size: 20px;
-            margin: 0 8px;
-        }
-
-        .highlight {
-            background: rgba(245, 158, 11, 0.2);
-            padding: 2px 6px;
-            border-radius: 4px;
-            color: var(--secondary);
-            font-weight: 600;
-        }
-
-        .key-point {
-            background: rgba(16, 185, 129, 0.1);
-            border-left: 4px solid var(--success);
-            padding: 12px 16px;
-            border-radius: 4px;
-            margin: 16px 0;
-            font-size: 14px;
-            color: var(--text-primary);
-        }
-
-        .comparison-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 16px 0;
-        }
-
-        .comparison-table th,
-        .comparison-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .comparison-table th {
-            background: var(--primary);
-            color: white;
-            font-weight: 600;
-        }
-
-        .comparison-table tr:hover {
-            background: var(--bg);
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-right: 8px;
-        }
-
-        .badge-class {
-            background: rgba(37, 99, 235, 0.2);
-            color: var(--primary);
-        }
-
-        .badge-object {
-            background: rgba(245, 158, 11, 0.2);
-            color: var(--secondary);
-        }
-
-        .max-width {
-            max-width: 1000px;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                width: 100%;
-                border-right: none;
-                border-bottom: 1px solid var(--border);
-                padding: 12px 0;
-                display: flex;
-                overflow-x: auto;
-            }
-
-            .sidebar-title {
-                display: none;
-            }
-
-            .nav-item {
-                padding: 8px 16px;
-                white-space: nowrap;
-                border-left: none;
-                border-bottom: 3px solid transparent;
-            }
-
-            .nav-item:hover,
-            .nav-item.active {
-                border-left: none;
-                border-bottom-color: var(--primary);
-            }
-
-            .content {
-                padding: 24px;
-            }
-
-            h1 {
-                font-size: 24px;
-            }
-        }
-    </style>
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr);gap:0}
+  .rail{
+    position:sticky;top:calc(var(--bar) + env(safe-area-inset-top,0px));
+    max-height:none;overflow:visible;
+    padding:.7rem 0;margin:0 0 .5rem;
+    background:var(--paper);border-bottom:1px solid var(--rule);z-index:30;
+  }
+  .rail-h{display:none}
+  .rail ol{flex-direction:row;overflow-x:auto;gap:.15rem;padding-bottom:.2rem}
+  .rail a{
+    border-left:none;border-bottom:2px solid transparent;
+    padding:.3rem .55rem;white-space:nowrap;
+    grid-template-columns:none;display:flex;gap:.35rem;
+  }
+  .rail a[aria-current="true"]{border-left-color:transparent;border-bottom-color:var(--accent)}
+  section.ch{scroll-margin-top:calc(var(--bar) + 3.2rem)}
+  .vwhy{padding-left:.75rem}
+}
+@media (max-width:520px){
+  body{font-size:16px}
+  .bar{gap:.55rem}
+  .bar .course{display:none}
+  .vrow{flex-wrap:wrap}
+  .vrow .pill{min-width:0}
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="sidebar">
-            <div class="sidebar-title">📚 Learn OOP</div>
-            <div class="nav-item active" onclick="showSection('intro')">🎯 Introduction</div>
-            <div class="nav-item" onclick="showSection('classes-objects')">📦 Classes & Objects</div>
-            <div class="nav-item" onclick="showSection('encapsulation')">🔒 Encapsulation</div>
-            <div class="nav-item" onclick="showSection('inheritance')">👨‍👧 Inheritance</div>
-            <div class="nav-item" onclick="showSection('polymorphism')">🎭 Polymorphism</div>
-            <div class="nav-item" onclick="showSection('abstraction')">🎨 Abstraction</div>
+
+<div class="bar">
+  <span class="course">CSC 301</span>
+  <h1>Java Object Semantics</h1>
+  <span class="spacer"></span>
+  <button class="tbtn" id="themeBtn" type="button">Theme</button>
+</div>
+
+<div class="shell">
+  <nav class="rail" aria-label="Contents">
+    <p class="rail-h">Contents</p>
+    <ol id="toc">
+      <li><a href="#ch1"><span class="n">01</span><span>The object model</span></a></li>
+      <li><a href="#ch2"><span class="n">02</span><span>Initialization order</span></a></li>
+      <li><a href="#ch3"><span class="n">03</span><span>Encapsulation &amp; invariants</span></a></li>
+      <li><a href="#ch4"><span class="n">04</span><span>Inheritance &amp; dispatch</span></a></li>
+      <li><a href="#ch5"><span class="n">05</span><span>Overloading vs overriding</span></a></li>
+      <li><a href="#ch6"><span class="n">06</span><span>Abstract classes &amp; interfaces</span></a></li>
+      <li><a href="#ch7"><span class="n">07</span><span>Substitutability &amp; variance</span></a></li>
+      <li><a href="#ch8"><span class="n">08</span><span>The Object contract</span></a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <header class="lede">
+      <p class="doc-sub">Third-year course reference</p>
+      <h1 class="doc-title">Java Object Semantics</h1>
+      <p>Most introductions to object-oriented programming stop at the vocabulary: a class is a blueprint, an object is an instance, inheritance means reuse. That vocabulary is not wrong, but it does not let you predict what a program does. This reference is about the semantics underneath — which method the JVM actually invokes, in what order fields acquire their values, why a <code>HashSet</code> can fail to find an element you just inserted, and why <code>List&lt;String&gt;</code> is not a subtype of <code>List&lt;Object&gt;</code>.</p>
+      <p>Every claim here is checkable against the Java Language Specification, and the section numbers are cited so you can check them. The interactive panels are not illustrations; they model the resolution rules directly, so working through them is a way of testing whether your mental model matches the language.</p>
+      <div class="prereq">
+        <span><b>Assumes</b> Java syntax, control flow, arrays, collections</span>
+        <span><b>Targets</b> Java 17+</span>
+        <span><b>Cites</b> JLS 21</span>
+      </div>
+    </header>
+
+    <!-- ============ 01 ============ -->
+    <section class="ch" id="ch1">
+      <div class="ch-head">
+        <span class="ch-num">01</span>
+        <h2>The object model: references, identity, and equality</h2>
+      </div>
+
+      <p>A Java variable of a reference type does not contain an object. It contains a <em>reference</em> to an object, and the object itself lives on the heap. This single fact explains aliasing bugs, defensive copying, and the difference between <code>==</code> and <code>equals</code>. Every other topic in this document depends on it.</p>
+
+      <figure class="code">
+        <figcaption>Two references, one object</figcaption>
+<pre><span class="t">StringBuilder</span> a = <span class="k">new</span> <span class="t">StringBuilder</span>(<span class="s">"draft"</span>);
+<span class="t">StringBuilder</span> b = a;              <span class="c">// copies the reference, not the object</span>
+b.<span class="m">append</span>(<span class="s">" v2"</span>);
+
+<span class="t">System</span>.out.<span class="m">println</span>(a);        <span class="c">// draft v2   &lt;- a and b are aliases</span>
+<span class="t">System</span>.out.<span class="m">println</span>(a == b);   <span class="c">// true       &lt;- same identity</span></pre>
+      </figure>
+
+      <p>Assignment copies the reference. There is no implicit copying of objects anywhere in Java: not on assignment, not on argument passing, not on return. Java is strictly call-by-value, but for reference types the <em>value</em> being passed is the reference. A method therefore cannot reassign the caller's variable, yet it can freely mutate the object that variable points at.</p>
+
+      <figure class="code">
+        <figcaption>Call-by-value applied to a reference</figcaption>
+<pre><span class="k">static void</span> <span class="m">reassign</span>(<span class="t">List</span>&lt;<span class="t">String</span>&gt; xs) { xs = <span class="k">new</span> <span class="t">ArrayList</span>&lt;&gt;(); }  <span class="c">// no effect on caller</span>
+<span class="k">static void</span> <span class="m">mutate</span>  (<span class="t">List</span>&lt;<span class="t">String</span>&gt; xs) { xs.<span class="m">add</span>(<span class="s">"x"</span>); }             <span class="c">// visible to caller</span>
+
+<span class="t">List</span>&lt;<span class="t">String</span>&gt; xs = <span class="k">new</span> <span class="t">ArrayList</span>&lt;&gt;();
+<span class="m">reassign</span>(xs);   <span class="t">System</span>.out.<span class="m">println</span>(xs);  <span class="c">// []</span>
+<span class="m">mutate</span>(xs);     <span class="t">System</span>.out.<span class="m">println</span>(xs);  <span class="c">// [x]</span></pre>
+      </figure>
+
+      <h3>Identity versus equality</h3>
+
+      <p><code>==</code> on reference types asks whether two references point at the same object. <code>equals</code> asks whether two objects are interchangeable for the purposes of the class that defines them. The default <code>Object.equals</code> implementation is identity comparison, so a class that does not override <code>equals</code> answers both questions the same way — which is why the distinction is easy to miss until it produces a bug.</p>
+
+      <div class="block spec">
+        <span class="tag">Specification &middot; JLS §15.21.3</span>
+        <p>For operands of reference type, <code>==</code> produces <code>true</code> if and only if both operands refer to the same object or both are <code>null</code>. The comparison is a well-defined operation on references and is never redirected to a user-defined method.</p>
+      </div>
+
+      <p>The trap worth committing to memory involves autoboxing. <code>Integer.valueOf</code> is required by the specification to return cached instances for values in the range −128 to 127, and is permitted but not required to cache other values. Identity comparison on boxed integers therefore has a result that depends on the magnitude of the number.</p>
+
+      <div class="widget">
+        <div class="widget-h"><span class="tag">Puzzle</span><span class="ttl">Predict the output before revealing</span></div>
+        <div class="widget-b">
+
+          <div class="puz">
+            <figure class="code" style="margin-top:0">
+              <figcaption>1 &middot; Boxed identity</figcaption>
+<pre><span class="t">Integer</span> a = <span class="n">127</span>, b = <span class="n">127</span>;
+<span class="t">Integer</span> c = <span class="n">128</span>, d = <span class="n">128</span>;
+<span class="t">System</span>.out.<span class="m">println</span>(a == b);
+<span class="t">System</span>.out.<span class="m">println</span>(c == d);
+<span class="t">System</span>.out.<span class="m">println</span>(c.<span class="m">equals</span>(d));</pre>
+            </figure>
+            <div class="btnrow"><button class="btn ghost" type="button" data-reveal="p1">Reveal</button></div>
+            <div class="answer" id="p1" hidden>
+              <span class="out">true / false / true</span>
+              <p>Both literals assigned to <code>Integer</code> are autoboxed through <code>Integer.valueOf</code>. For 127 the specification mandates a cached instance, so <code>a</code> and <code>b</code> are the same object and <code>==</code> is <code>true</code>. For 128 the HotSpot default cache upper bound has been exceeded, so two distinct objects are allocated and <code>==</code> is <code>false</code>. <code>equals</code> compares the wrapped <code>int</code> values and is <code>true</code> in both cases.</p>
+              <p>The cache bound is tunable with <code>-XX:AutoBoxCacheMax</code>, which means the value of <code>c == d</code> is not fixed by the language at all. Code whose behaviour depends on it is broken by construction.</p>
+            </div>
+          </div>
+
+          <div class="puz">
+            <figure class="code">
+              <figcaption>2 &middot; String interning</figcaption>
+<pre><span class="t">String</span> s1 = <span class="s">"hello"</span>;
+<span class="t">String</span> s2 = <span class="s">"hel"</span> + <span class="s">"lo"</span>;
+<span class="t">String</span> s3 = <span class="k">new</span> <span class="t">String</span>(<span class="s">"hello"</span>);
+<span class="t">System</span>.out.<span class="m">println</span>(s1 == s2);
+<span class="t">System</span>.out.<span class="m">println</span>(s1 == s3);
+<span class="t">System</span>.out.<span class="m">println</span>(s1 == s3.<span class="m">intern</span>());</pre>
+            </figure>
+            <div class="btnrow"><button class="btn ghost" type="button" data-reveal="p2">Reveal</button></div>
+            <div class="answer" id="p2" hidden>
+              <span class="out">true / false / true</span>
+              <p><code>"hel" + "lo"</code> is a constant expression: both operands are compile-time constants, so the compiler folds it to <code>"hello"</code> and the result is the interned pool instance. <code>s1 == s2</code> is therefore <code>true</code>. Had either operand been a non-final variable, the concatenation would happen at runtime and allocate a fresh object.</p>
+              <p><code>new String(...)</code> is an explicit allocation and always produces a distinct object, so <code>s1 == s3</code> is <code>false</code>. <code>intern()</code> returns the pool's canonical instance for that character sequence, which is <code>s1</code>.</p>
+            </div>
+          </div>
+
         </div>
+      </div>
 
-        <div class="content">
-            <!-- Introduction Section -->
-            <section id="intro" class="section active">
-                <h1>🚀 Welcome to Java OOP</h1>
-                <p class="intro-text">Object-Oriented Programming (OOP) is a way of writing code that mirrors how we think about the real world. Instead of writing long lists of instructions, we organize our code into "objects" that represent real things—like a Dog, a Car, or a Person.</p>
+      <div class="block rule">
+        <span class="tag">Working rule</span>
+        <p>Use <code>==</code> on reference types only when you genuinely mean identity — cycle detection, sentinel comparison, cache lookups keyed on instance, and <code>enum</code> constants, where identity and equality coincide by construction. In all other cases use <code>equals</code>, and reach for <code>Objects.equals(a, b)</code> when either operand may be <code>null</code>.</p>
+      </div>
 
-                <div class="concept-card">
-                    <h3>Why Learn OOP?</h3>
-                    <p>✅ <strong>Organized:</strong> Code is grouped logically, making it easier to understand and maintain</p>
-                    <p>✅ <strong>Reusable:</strong> Write code once, use it many times</p>
-                    <p>✅ <strong>Flexible:</strong> Easy to add new features without breaking existing code</p>
-                    <p>✅ <strong>Real-world:</strong> Models real objects and their relationships</p>
-                </div>
+      <div class="ex">
+        <h3>Exercises</h3>
+        <ol>
+          <li><b>1.1</b> Write a method <code>swap(int[] a, int i, int j)</code> and a method <code>swap(Integer x, Integer y)</code>. Explain precisely why the first can work and the second cannot, in terms of what value is passed.</li>
+          <li><b>1.2</b> Construct two <code>String</code> references <code>s</code> and <code>t</code> such that <code>s.equals(t)</code> is <code>true</code>, <code>s == t</code> is <code>false</code>, and neither is created with <code>new</code>. State which language rule makes your construction work.</li>
+        </ol>
+      </div>
+    </section>
 
-                <div class="concept-card">
-                    <h3>The Four Pillars of OOP</h3>
-                    <p>Think of building a house:</p>
-                    <div style="margin-top: 16px;">
-                        <p><span class="badge badge-class">1. Classes & Objects</span> - The blueprint (class) and the actual house (object)</p>
-                        <p><span class="badge badge-class">2. Encapsulation</span> - Hiding internal wiring, keeping some things private</p>
-                        <p><span class="badge badge-class">3. Inheritance</span> - A penthouse is a special kind of house, inheriting house features</p>
-                        <p><span class="badge badge-class">4. Polymorphism</span> - Different actions for different types (apartment vs. house)</p>
-                    </div>
-                </div>
+    <!-- ============ 02 ============ -->
+    <section class="ch" id="ch2">
+      <div class="ch-head">
+        <span class="ch-num">02</span>
+        <h2>Initialization order and the partially built object</h2>
+      </div>
 
-                <div class="concept-card">
-                    <h3>Let's Get Started!</h3>
-                    <p>Use the menu on the left to explore each concept. Each section has explanations, visual diagrams, code examples, and interactive demonstrations.</p>
-                </div>
-            </section>
+      <p>Object construction in Java is a fixed, specified sequence — not a single atomic event. Knowing the sequence lets you explain a family of bugs that otherwise look like the language misbehaving, most importantly the case where a <code>final</code> field is observed holding zero.</p>
 
-            <!-- Classes & Objects Section -->
-            <section id="classes-objects" class="section">
-                <h1>📦 Classes and Objects</h1>
-                <p class="intro-text">A <strong>Class</strong> is like a blueprint or template. An <strong>Object</strong> is an actual thing created from that blueprint.</p>
+      <div class="block spec">
+        <span class="tag">Specification &middot; JLS §12.4, §12.5</span>
+        <p><strong>Class initialization</strong> happens once, on first active use: static fields are given default values, then static initializers and static field initializers run in source order.</p>
+        <p><strong>Instance creation</strong> proceeds: allocate and zero all instance fields; evaluate the constructor's arguments; delegate to <code>this(...)</code> if present, otherwise invoke the superclass constructor; then run instance initializers and instance field initializers <em>in source order</em>; finally run the remainder of the constructor body.</p>
+      </div>
 
-                <div class="concept-card">
-                    <h3>Real-World Analogy</h3>
-                    <p>Think of a cookie cutter (the class) and cookies (the objects):</p>
-                    <ul style="margin-left: 20px; margin-top: 8px;">
-                        <li>The <strong>cookie cutter</strong> is the class—it defines the shape</li>
-                        <li>Each <strong>cookie you make</strong> is an object—each one is a real, edible thing</li>
-                        <li>You can make many cookies from one cutter</li>
-                    </ul>
-                </div>
+      <p>The consequence to internalize is that the superclass constructor runs to completion <em>before</em> any subclass field initializer runs. During the superclass constructor, the object already has its final runtime type, so virtual calls dispatch to subclass overrides — but those overrides see subclass fields still holding their default values.</p>
 
-                <h2>Creating a Class</h2>
-                <div class="concept-card">
-                    <p>Here's a simple Java class representing a <strong>Dog</strong>:</p>
-                    <div class="code-block"><code>
-<span class="keyword">public class</span> <span class="class-name">Dog</span> {
-    <span class="comment">// Properties (what the dog HAS)</span>
-    <span class="keyword">public</span> String name;
-    <span class="keyword">public</span> String breed;
-    <span class="keyword">public int</span> age;
-
-    <span class="comment">// Constructor (how to create a dog)</span>
-    <span class="keyword">public</span> <span class="class-name">Dog</span>(String name, String breed, <span class="keyword">int</span> age) {
-        <span class="keyword">this</span>.name = name;
-        <span class="keyword">this</span>.breed = breed;
-        <span class="keyword">this</span>.age = age;
-    }
-
-    <span class="comment">// Methods (what the dog CAN DO)</span>
-    <span class="keyword">public void</span> <span class="method">bark</span>() {
-        System.out.println(name + <span class="string">" says: Woof! Woof!"</span>);
-    }
-
-    <span class="keyword">public void</span> <span class="method">eat</span>() {
-        System.out.println(name + <span class="string">" is eating..."</span>);
-    }
-}</code></div>
-                </div>
-
-                <div class="example-section">
-                    <div class="example-label">📋 Class Components</div>
-                    <table class="comparison-table">
-                        <tr>
-                            <th>Component</th>
-                            <th>Purpose</th>
-                            <th>Example</th>
-                        </tr>
-                        <tr>
-                            <td><strong>Properties</strong></td>
-                            <td>What the object HAS (characteristics)</td>
-                            <td>name, breed, age</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Constructor</strong></td>
-                            <td>Creates a new object</td>
-                            <td>Dog("Buddy", "Golden Retriever", 3)</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Methods</strong></td>
-                            <td>What the object CAN DO (actions)</td>
-                            <td>bark(), eat()</td>
-                        </tr>
-                    </table>
-                </div>
-
-                <h2>Creating Objects (Instances)</h2>
-                <div class="concept-card">
-                    <p>Now let's create actual objects from our Dog class:</p>
-                    <div class="code-block"><code>
-<span class="comment">// Creating object 1</span>
-Dog dog1 = <span class="keyword">new</span> <span class="class-name">Dog</span>(<span class="string">"Buddy"</span>, <span class="string">"Golden Retriever"</span>, 3);
-
-<span class="comment">// Creating object 2</span>
-Dog dog2 = <span class="keyword">new</span> <span class="class-name">Dog</span>(<span class="string">"Max"</span>, <span class="string">"German Shepherd"</span>, 5);
-
-<span class="comment">// Using the objects</span>
-dog1.<span class="method">bark</span>();  <span class="comment">// Output: Buddy says: Woof! Woof!</span>
-dog2.<span class="method">eat</span>();   <span class="comment">// Output: Max is eating...</span></code></div>
-                </div>
-
-                <div class="key-point">
-                    <strong>💡 Key Insight:</strong> The class is the template, but objects are real things with real values. dog1 and dog2 are different objects with different properties!
-                </div>
-
-                <div class="interactive-demo">
-                    <div class="demo-label">🎮 Interactive Demo</div>
-                    <p style="margin-bottom: 16px;">Create a dog and see it in action:</p>
-                    <input type="text" id="dogName" placeholder="Dog name" style="padding: 8px; margin-right: 8px; border-radius: 4px; border: 1px solid var(--border);">
-                    <input type="text" id="dogBreed" placeholder="Breed" style="padding: 8px; margin-right: 8px; border-radius: 4px; border: 1px solid var(--border);">
-                    <button onclick="createDog()">🐕 Create Dog</button>
-                    <div id="dogOutput" class="output" style="display: none;"></div>
-                </div>
-            </section>
-
-            <!-- Encapsulation Section -->
-            <section id="encapsulation" class="section">
-                <h1>🔒 Encapsulation</h1>
-                <p class="intro-text">Encapsulation means <span class="highlight">hiding the internal details</span> of an object and only letting people use what they need. It's like a car—you use the steering wheel and pedals, but you don't need to know how the engine works inside.</p>
-
-                <div class="concept-card">
-                    <h3>Without Encapsulation (❌ Bad)</h3>
-                    <p>Everything is public—anyone can change anything:</p>
-                    <div class="code-block"><code>
-<span class="keyword">public class</span> <span class="class-name">BankAccount</span> {
-    <span class="keyword">public</span> <span class="keyword">double</span> balance;  <span class="comment">// ⚠️ Anyone can change this!</span>
+      <div class="widget">
+        <div class="widget-h"><span class="tag">Tracer</span><span class="ttl">Step through <code>new Circle(2.0)</code></span></div>
+        <div class="widget-b">
+          <p style="font-size:.92rem;color:var(--ink-2)">A three-level hierarchy with static blocks, field initializers, instance initializer blocks, and constructor bodies. Step forward to see the exact order the JVM uses.</p>
+          <figure class="code">
+            <figcaption>The hierarchy under trace</figcaption>
+<pre><span class="k">class</span> <span class="t">Shape</span> {
+    <span class="k">static</span> { log(<span class="s">"Shape: static block"</span>); }
+    <span class="t">String</span> id = init(<span class="s">"Shape: field id"</span>);
+    { log(<span class="s">"Shape: instance block"</span>); }
+    <span class="t">Shape</span>() { log(<span class="s">"Shape: ctor body"</span>); }
 }
-
-<span class="comment">// Bad: Anyone can change the balance!</span>
-account.balance = <span class="string">-1000</span>;  <span class="comment">// Oops! Negative balance!</span></code></div>
-                </div>
-
-                <div class="concept-card">
-                    <h3>With Encapsulation (✅ Good)</h3>
-                    <p>Hide the details, provide controlled access:</p>
-                    <div class="code-block"><code>
-<span class="keyword">public class</span> <span class="class-name">BankAccount</span> {
-    <span class="keyword">private double</span> balance;  <span class="comment">// Hidden! Can't access directly</span>
-
-    <span class="comment">// Constructor</span>
-    <span class="keyword">public</span> <span class="class-name">BankAccount</span>(<span class="keyword">double</span> initialBalance) {
-        <span class="keyword">this</span>.balance = initialBalance;
-    }
-
-    <span class="comment">// Getter: Read the balance safely</span>
-    <span class="keyword">public double</span> <span class="method">getBalance</span>() {
-        <span class="keyword">return</span> balance;
-    }
-
-    <span class="comment">// Setter: Change balance safely with validation</span>
-    <span class="keyword">public void</span> <span class="method">deposit</span>(<span class="keyword">double</span> amount) {
-        <span class="keyword">if</span> (amount > 0) {
-            balance += amount;
-        }
-    }
-}</code></div>
-                </div>
-
-                <div class="key-point">
-                    <strong>💡 Access Modifiers:</strong>
-                    <ul style="margin-left: 20px; margin-top: 8px;">
-                        <li><span class="badge badge-class">public</span> - Anyone can access</li>
-                        <li><span class="badge badge-class">private</span> - Only the class can access</li>
-                        <li><span class="badge badge-class">protected</span> - Class and subclasses can access</li>
-                    </ul>
-                </div>
-
-                <div class="interactive-demo">
-                    <div class="demo-label">🎮 Interactive Demo</div>
-                    <p style="margin-bottom: 16px;">Try the secure bank account:</p>
-                    <button onclick="createAccount()">💳 Create Account ($1000)</button>
-                    <input type="number" id="amount" placeholder="Amount to deposit" style="padding: 8px; margin: 8px; border-radius: 4px; border: 1px solid var(--border);">
-                    <button onclick="depositMoney()">💰 Deposit</button>
-                    <div id="accountOutput" class="output" style="display: none;"></div>
-                </div>
-            </section>
-
-            <!-- Inheritance Section -->
-            <section id="inheritance" class="section">
-                <h1>👨‍👧 Inheritance</h1>
-                <p class="intro-text">Inheritance lets you create a new class based on an existing class. The new class inherits all the properties and methods of the parent class, and can add its own special features.</p>
-
-                <div class="concept-card">
-                    <h3>Real-World Example</h3>
-                    <p>Think of vehicles:</p>
-                    <ul style="margin-left: 20px; margin-top: 8px;">
-                        <li><strong>Vehicle</strong> (parent) - has wheels, engine, color</li>
-                        <li><strong>Car</strong> (child) - inherits from Vehicle, adds doors, trunk</li>
-                        <li><strong>Truck</strong> (child) - inherits from Vehicle, adds cargo bed</li>
-                    </ul>
-                </div>
-
-                <div class="diagram">
-                    <div style="text-align: center;">
-                        <div class="class-box parent-box">🚗 Vehicle</div>
-                        <div style="margin: 12px 0;">↓ ↓ ↓</div>
-                        <div style="display: flex; justify-content: center; gap: 20px;">
-                            <div class="class-box">🚙 Car</div>
-                            <div class="class-box">🚚 Truck</div>
-                            <div class="class-box">🏍️ Motorcycle</div>
-                        </div>
-                    </div>
-                </div>
-
-                <h2>Parent Class (Superclass)</h2>
-                <div class="concept-card">
-                    <p>The parent class that others will inherit from:</p>
-                    <div class="code-block"><code>
-<span class="keyword">public class</span> <span class="class-name">Animal</span> {
-    <span class="keyword">protected</span> String name;
-    <span class="keyword">protected int</span> age;
-
-    <span class="keyword">public</span> <span class="class-name">Animal</span>(String name, <span class="keyword">int</span> age) {
-        <span class="keyword">this</span>.name = name;
-        <span class="keyword">this</span>.age = age;
-    }
-
-    <span class="keyword">public void</span> <span class="method">sleep</span>() {
-        System.out.println(name + <span class="string">" is sleeping..."</span>);
-    }
-}</code></div>
-                </div>
-
-                <h2>Child Class (Subclass)</h2>
-                <div class="concept-card">
-                    <p>The child class inherits from Animal using <span class="highlight">extends</span>:</p>
-                    <div class="code-block"><code>
-<span class="keyword">public class</span> <span class="class-name">Dog</span> <span class="keyword">extends</span> <span class="class-name">Animal</span> {
-    <span class="keyword">private</span> String breed;
-
-    <span class="keyword">public</span> <span class="class-name">Dog</span>(String name, <span class="keyword">int</span> age, String breed) {
-        <span class="keyword">super</span>(name, age);  <span class="comment">// Call parent constructor</span>
-        <span class="keyword">this</span>.breed = breed;
-    }
-
-    <span class="comment">// New method for Dog</span>
-    <span class="keyword">public void</span> <span class="method">bark</span>() {
-        System.out.println(name + <span class="string">" says: Woof!"</span>);
-    }
+<span class="k">class</span> <span class="t">Round</span> <span class="k">extends</span> <span class="t">Shape</span> {
+    <span class="k">static</span> { log(<span class="s">"Round: static block"</span>); }
+    <span class="k">int</span> sides = init(<span class="s">"Round: field sides"</span>);
+    <span class="t">Round</span>() { <span class="k">super</span>(); log(<span class="s">"Round: ctor body"</span>); }
 }
-
-<span class="keyword">public class</span> <span class="class-name">Cat</span> <span class="keyword">extends</span> <span class="class-name">Animal</span> {
-    <span class="keyword">public void</span> <span class="method">meow</span>() {
-        System.out.println(name + <span class="string">" says: Meow!"</span>);
-    }
-}</code></div>
-                </div>
-
-                <div class="key-point">
-                    <strong>💡 What's Inherited?</strong> Dog and Cat automatically get: name, age, and sleep() method from Animal. They can add their own methods too!
-                </div>
-
-                <div class="interactive-demo">
-                    <div class="demo-label">🎮 Interactive Demo</div>
-                    <p style="margin-bottom: 16px;">Create animals and watch inheritance in action:</p>
-                    <button onclick="createAnimals()">🐕 Create Dog & Cat</button>
-                    <div id="animalOutput" class="output" style="display: none;"></div>
-                </div>
-            </section>
-
-            <!-- Polymorphism Section -->
-            <section id="polymorphism" class="section">
-                <h1>🎭 Polymorphism</h1>
-                <p class="intro-text">Polymorphism means <span class="highlight">"many forms"</span>. The same method name can do different things for different objects. For example, all animals can "makeSound()" but each makes a different sound!</p>
-
-                <div class="concept-card">
-                    <h3>Real-World Example</h3>
-                    <p>Imagine a "makeSound()" instruction:</p>
-                    <ul style="margin-left: 20px; margin-top: 8px;">
-                        <li>Dog → Woof!</li>
-                        <li>Cat → Meow!</li>
-                        <li>Cow → Moo!</li>
-                    </ul>
-                    <p>Same method, different results!</p>
-                </div>
-
-                <div class="concept-card">
-                    <h3>How It Works: Method Overriding</h3>
-                    <p>The parent class defines a method, and child classes provide their own version:</p>
-                    <div class="code-block"><code>
-<span class="keyword">public class</span> <span class="class-name">Animal</span> {
-    <span class="keyword">public void</span> <span class="method">makeSound</span>() {
-        System.out.println(<span class="string">"Some generic sound"</span>);
-    }
-}
-
-<span class="keyword">public class</span> <span class="class-name">Dog</span> <span class="keyword">extends</span> <span class="class-name">Animal</span> {
-    <span class="keyword">@Override</span>
-    <span class="keyword">public void</span> <span class="method">makeSound</span>() {
-        System.out.println(<span class="string">"Woof! Woof!"</span>);
-    }
-}
-
-<span class="keyword">public class</span> <span class="class-name">Cat</span> <span class="keyword">extends</span> <span class="class-name">Animal</span> {
-    <span class="keyword">@Override</span>
-    <span class="keyword">public void</span> <span class="method">makeSound</span>() {
-        System.out.println(<span class="string">"Meow!"</span>);
-    }
-}</code></div>
-                </div>
-
-                <div class="concept-card">
-                    <h3>Using Polymorphism</h3>
-                    <p>Here's the magic—you can treat all animals the same way:</p>
-                    <div class="code-block"><code>
-<span class="comment">// Create a list of animals</span>
-Animal[] animals = <span class="keyword">new</span> Animal[3];
-animals[0] = <span class="keyword">new</span> <span class="class-name">Dog</span>();
-animals[1] = <span class="keyword">new</span> <span class="class-name">Cat</span>();
-animals[2] = <span class="keyword">new</span> <span class="class-name">Cow</span>();
-
-<span class="comment">// Call makeSound on each animal</span>
-<span class="keyword">for</span> (Animal animal : animals) {
-    animal.<span class="method">makeSound</span>();  <span class="comment">// Each makes its own sound!</span>
-}</code></div>
-                </div>
-
-                <div class="key-point">
-                    <strong>💡 Power of Polymorphism:</strong> Write once, work with many types! You don't need to know the exact type of animal to call its method.
-                </div>
-
-                <div class="interactive-demo">
-                    <div class="demo-label">🎮 Interactive Demo</div>
-                    <p style="margin-bottom: 16px;">See polymorphism in action:</p>
-                    <button onclick="demonstratePolymorphism()">🐕 🐱 🐮 Make All Sounds</button>
-                    <div id="polymorphismOutput" class="output" style="display: none;"></div>
-                </div>
-            </section>
-
-            <!-- Abstraction Section -->
-            <section id="abstraction" class="section">
-                <h1>🎨 Abstraction</h1>
-                <p class="intro-text">Abstraction means hiding complexity and showing only what's necessary. You define what an object SHOULD do (an interface or abstract class), but don't specify exactly HOW to do it.</p>
-
-                <div class="concept-card">
-                    <h3>Real-World Example</h3>
-                    <p>Think of a remote control:</p>
-                    <ul style="margin-left: 20px; margin-top: 8px;">
-                        <li>You see: Power button, Volume button, Channel buttons</li>
-                        <li>You don't see: Complex circuits, how it actually works</li>
-                        <li>You don't need to know the details to use it!</li>
-                    </ul>
-                </div>
-
-                <div class="concept-card">
-                    <h3>Abstract Class</h3>
-                    <p>An abstract class is like a blueprint that child classes must follow:</p>
-                    <div class="code-block"><code>
-<span class="keyword">public abstract class</span> <span class="class-name">Shape</span> {
-    <span class="comment">// Abstract method - must be implemented by child classes</span>
-    <span class="keyword">public abstract void</span> <span class="method">draw</span>();
-    <span class="keyword">public abstract double</span> <span class="method">calculateArea</span>();
-
-    <span class="comment">// Concrete method - same for all shapes</span>
-    <span class="keyword">public void</span> <span class="method">display</span>() {
-        System.out.println(<span class="string">"Displaying shape..."</span>);
-    }
-}</code></div>
-                </div>
-
-                <div class="concept-card">
-                    <h3>Concrete Implementation</h3>
-                    <p>Child classes MUST implement abstract methods:</p>
-                    <div class="code-block"><code>
-<span class="keyword">public class</span> <span class="class-name">Circle</span> <span class="keyword">extends</span> <span class="class-name">Shape</span> {
-    <span class="keyword">private double</span> radius;
-
-    <span class="keyword">public</span> <span class="class-name">Circle</span>(<span class="keyword">double</span> radius) {
-        <span class="keyword">this</span>.radius = radius;
-    }
-
-    <span class="keyword">@Override</span>
-    <span class="keyword">public void</span> <span class="method">draw</span>() {
-        System.out.println(<span class="string">"Drawing a circle..."</span>);
-    }
-
-    <span class="keyword">@Override</span>
-    <span class="keyword">public double</span> <span class="method">calculateArea</span>() {
-        <span class="keyword">return</span> 3.14 * radius * radius;
-    }
-}
-
-<span class="keyword">public class</span> <span class="class-name">Rectangle</span> <span class="keyword">extends</span> <span class="class-name">Shape</span> {
-    <span class="keyword">private double</span> width, height;
-
-    <span class="keyword">public</span> <span class="class-name">Rectangle</span>(<span class="keyword">double</span> width, <span class="keyword">double</span> height) {
-        <span class="keyword">this</span>.width = width;
-        <span class="keyword">this</span>.height = height;
-    }
-
-    <span class="keyword">@Override</span>
-    <span class="keyword">public void</span> <span class="method">draw</span>() {
-        System.out.println(<span class="string">"Drawing a rectangle..."</span>);
-    }
-
-    <span class="keyword">@Override</span>
-    <span class="keyword">public double</span> <span class="method">calculateArea</span>() {
-        <span class="keyword">return</span> width * height;
-    }
-}</code></div>
-                </div>
-
-                <div class="key-point">
-                    <strong>💡 Why Abstraction?</strong>
-                    <ul style="margin-left: 20px; margin-top: 8px;">
-                        <li>Forces consistent structure across classes</li>
-                        <li>Hides implementation complexity</li>
-                        <li>Makes code flexible and extensible</li>
-                    </ul>
-                </div>
-
-                <div class="interactive-demo">
-                    <div class="demo-label">🎮 Interactive Demo</div>
-                    <p style="margin-bottom: 16px;">See abstraction in action with shapes:</p>
-                    <button onclick="demonstrateAbstraction()">📐 Draw Shapes & Calculate Areas</button>
-                    <div id="abstractionOutput" class="output" style="display: none;"></div>
-                </div>
-
-                <div class="concept-card" style="margin-top: 32px;">
-                    <h3>🎓 Congratulations!</h3>
-                    <p>You've now learned all four pillars of OOP! These concepts work together to make your code organized, reusable, and maintainable. Practice creating different classes and objects to solidify your understanding.</p>
-                </div>
-            </section>
+<span class="k">class</span> <span class="t">Circle</span> <span class="k">extends</span> <span class="t">Round</span> {
+    <span class="k">static</span> { log(<span class="s">"Circle: static block"</span>); }
+    <span class="k">double</span> r = init(<span class="s">"Circle: field r"</span>);
+    { log(<span class="s">"Circle: instance block"</span>); }
+    <span class="t">Circle</span>(<span class="k">double</span> r) { <span class="k">super</span>(); <span class="k">this</span>.r = r; log(<span class="s">"Circle: ctor body"</span>); }
+}</pre>
+          </figure>
+          <ol class="trace" id="traceList"></ol>
+          <div class="step-note" id="traceNote"></div>
+          <div class="btnrow" style="margin-top:.8rem">
+            <button class="btn" type="button" id="tNext">Step</button>
+            <button class="btn ghost" type="button" id="tPrev">Back</button>
+            <button class="btn ghost" type="button" id="tAll">Run all</button>
+            <button class="btn ghost" type="button" id="tReset">Reset</button>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <script>
-        function showSection(sectionId) {
-            // Hide all sections
-            const sections = document.querySelectorAll('.section');
-            sections.forEach(section => section.classList.remove('active'));
+      <p>Note two details the tracer makes concrete. All three static blocks run before any instance work, and they run top-down through the hierarchy because initializing a class requires its superclass to be initialized first. And within each level, field initializers and instance blocks interleave in <em>source</em> order — they are not two separate phases.</p>
 
-            // Remove active class from all nav items
-            const navItems = document.querySelectorAll('.nav-item');
-            navItems.forEach(item => item.classList.remove('active'));
+      <h3>Calling an overridable method from a constructor</h3>
 
-            // Show selected section
-            document.getElementById(sectionId).classList.add('active');
+      <p>This is the canonical construction bug, and it defeats even <code>final</code> fields.</p>
 
-            // Add active class to clicked nav item
-            event.target.classList.add('active');
-        }
+      <div class="widget">
+        <div class="widget-h"><span class="tag">Puzzle</span><span class="ttl">A <code>final</code> field observed as zero</span></div>
+        <div class="widget-b">
+          <div class="puz">
+            <figure class="code" style="margin-top:0">
+              <figcaption>3 &middot; Virtual call during construction</figcaption>
+<pre><span class="k">class</span> <span class="t">Base</span> {
+    <span class="t">Base</span>() { <span class="m">describe</span>(); }              <span class="c">// virtual call, subclass not yet initialized</span>
+    <span class="k">void</span> <span class="m">describe</span>() { <span class="t">System</span>.out.<span class="m">println</span>(<span class="s">"a Base"</span>); }
+}
+<span class="k">class</span> <span class="t">Derived</span> <span class="k">extends</span> <span class="t">Base</span> {
+    <span class="k">private final int</span> size = <span class="n">42</span>;
+    <span class="k">@Override void</span> <span class="m">describe</span>() { <span class="t">System</span>.out.<span class="m">println</span>(<span class="s">"a Derived of size "</span> + size); }
+}
 
-        // Interactive Demos
-        function createDog() {
-            const name = document.getElementById('dogName').value;
-            const breed = document.getElementById('dogBreed').value;
+<span class="k">new</span> <span class="t">Derived</span>().<span class="m">describe</span>();</pre>
+            </figure>
+            <div class="btnrow"><button class="btn ghost" type="button" data-reveal="p3">Reveal</button></div>
+            <div class="answer" id="p3" hidden>
+              <span class="out">a Derived of size 0<br>a Derived of size 42</span>
+              <p>The <code>Base</code> constructor invokes <code>describe()</code>. Dispatch is on the runtime type, which is already <code>Derived</code>, so the override runs. But <code>Derived</code>'s field initializers have not executed yet — the object is still in the zeroed state from allocation — so <code>size</code> reads as <code>0</code>. The second call, after construction completes, sees <code>42</code>.</p>
+              <p><code>final</code> does not help. <code>final</code> constrains how many times a field may be <em>assigned</em>, not when it becomes visible. A <code>final</code> field is readable in its default state for the whole window between allocation and its initializer running, and the compiler does not warn you.</p>
+              <p>The fix is structural, not cosmetic: a constructor must not call any method that a subclass could override. Restrict constructors to <code>private</code>, <code>static</code>, or <code>final</code> methods, or move the work into a factory method that fully constructs the object before invoking anything on it.</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-            if (!name || !breed) {
-                alert('Please enter dog name and breed!');
-                return;
-            }
+      <div class="block pitfall">
+        <span class="tag">Pitfall</span>
+        <p>A constructor that calls an overridable method publishes a partially initialized <code>this</code> to code it does not control. The same hazard appears whenever a constructor registers <code>this</code> with a listener, starts a thread, or stores <code>this</code> in a static registry: another thread or callback can observe the object before its invariants hold.</p>
+      </div>
 
-            const output = document.getElementById('dogOutput');
-            output.innerHTML = `
-<strong>🐕 Dog Created!</strong><br>
-Name: ${name}<br>
-Breed: ${breed}<br>
----<br>
-${name}: Woof! Woof!<br>
-${name} is eating...
-            `;
-            output.style.display = 'block';
-        }
+      <div class="ex">
+        <h3>Exercises</h3>
+        <ol>
+          <li><b>2.1</b> Rewrite the <code>Base</code>/<code>Derived</code> pair so that <code>describe()</code> is still polymorphic but can never observe an uninitialized field. Give two structurally different solutions and state what each gives up.</li>
+          <li><b>2.2</b> Predict the output of a class whose static initializer constructs an instance of that same class, where the constructor reads a static field declared <em>after</em> the initializer block. Then run it. Explain the result using JLS §12.4.2.</li>
+        </ol>
+      </div>
+    </section>
 
-        function createAccount() {
-            const output = document.getElementById('accountOutput');
-            output.innerHTML = `
-<strong>💳 Account Created!</strong><br>
-Initial Balance: $1000.00<br>
-Status: Account is secure and working!
-            `;
-            output.style.display = 'block';
-        }
+    <!-- ============ 03 ============ -->
+    <section class="ch" id="ch3">
+      <div class="ch-head">
+        <span class="ch-num">03</span>
+        <h2>Encapsulation as invariant protection</h2>
+      </div>
 
-        function depositMoney() {
-            const amount = parseFloat(document.getElementById('amount').value);
-            const output = document.getElementById('accountOutput');
+      <p>Encapsulation is routinely taught as "make fields private and add getters and setters". That formulation is close to meaningless: a class with a private field, a getter, and a setter is exactly as mutable and exactly as unprotected as one with a public field, only more verbose. Encapsulation is the practice of maintaining a class <em>invariant</em> — a property that is true of every instance, at every moment a client can observe it.</p>
 
-            if (isNaN(amount) || amount <= 0) {
-                output.innerHTML = `❌ Error: Invalid amount. Please enter a positive number.`;
-                output.style.display = 'block';
-                return;
-            }
+      <p>A <code>Range</code> with the invariant <code>lo &lt;= hi</code> is a useful test case. Public fields cannot maintain it. Getters and setters cannot maintain it either, because a two-step mutation passes through an invalid intermediate state. What maintains it is a constructor that validates, and mutators that only ever move between valid states.</p>
 
-            const newBalance = 1000 + amount;
-            output.innerHTML = `
-<strong>✅ Deposit Successful!</strong><br>
-Deposited: $${amount.toFixed(2)}<br>
-New Balance: $${newBalance.toFixed(2)}<br>
-<br>
-<strong>Notice:</strong> The balance is hidden (private)!<br>
-You can only deposit through the safe method.
-            `;
-            output.style.display = 'block';
-        }
+      <figure class="code">
+        <figcaption>Three attempts at one invariant</figcaption>
+<pre><span class="c">// 1. No encapsulation: invariant cannot be stated, let alone held.</span>
+<span class="k">class</span> <span class="t">Range</span> { <span class="k">public int</span> lo, hi; }
 
-        function createAnimals() {
-            const output = document.getElementById('animalOutput');
-            output.innerHTML = `
-<strong>🐕 Dog Created: "Buddy"</strong><br>
-From class: Dog (extends Animal)<br>
-Inherited methods: sleep()<br>
-Special methods: bark()<br>
-<br>
-Buddy is sleeping...<br>
-Buddy says: Woof! Woof!<br>
-<br>
-<strong>🐱 Cat Created: "Whiskers"</strong><br>
-From class: Cat (extends Animal)<br>
-Inherited methods: sleep()<br>
-Special methods: meow()<br>
-<br>
-Whiskers is sleeping...<br>
-Whiskers says: Meow!<br>
-<br>
-✅ Both inherited "sleep()" from Animal!
-            `;
-            output.style.display = 'block';
-        }
+<span class="c">// 2. Getters and setters: still broken. No single call is safe.</span>
+<span class="k">class</span> <span class="t">Range</span> {
+    <span class="k">private int</span> lo, hi;
+    <span class="k">public void</span> <span class="m">setLo</span>(<span class="k">int</span> lo) { <span class="k">this</span>.lo = lo; }   <span class="c">// can push lo past hi</span>
+    <span class="k">public void</span> <span class="m">setHi</span>(<span class="k">int</span> hi) { <span class="k">this</span>.hi = hi; }
+}
 
-        function demonstratePolymorphism() {
-            const output = document.getElementById('polymorphismOutput');
-            output.innerHTML = `
-<strong>🎭 Polymorphism in Action!</strong><br>
-<br>
-Calling makeSound() on different animals:<br>
-<br>
-Dog.makeSound() → 🐕 Woof! Woof!<br>
-Cat.makeSound() → 🐱 Meow!<br>
-Cow.makeSound() → 🐄 Moo!<br>
-<br>
-<strong>Key Point:</strong> Same method name, different behaviors!<br>
-We can loop through all animals and call makeSound()<br>
-without knowing exactly what type each one is.
-            `;
-            output.style.display = 'block';
-        }
+<span class="c">// 3. Encapsulated: the invariant is established once and never broken.</span>
+<span class="k">final class</span> <span class="t">Range</span> {
+    <span class="k">private final int</span> lo, hi;
+    <span class="k">public</span> <span class="t">Range</span>(<span class="k">int</span> lo, <span class="k">int</span> hi) {
+        <span class="k">if</span> (lo &gt; hi) <span class="k">throw new</span> <span class="t">IllegalArgumentException</span>(lo + <span class="s">" &gt; "</span> + hi);
+        <span class="k">this</span>.lo = lo; <span class="k">this</span>.hi = hi;
+    }
+    <span class="k">public</span> <span class="t">Range</span> <span class="m">withLo</span>(<span class="k">int</span> newLo) { <span class="k">return new</span> <span class="t">Range</span>(newLo, hi); }  <span class="c">// validated</span>
+    <span class="k">public int</span> <span class="m">lo</span>() { <span class="k">return</span> lo; }
+    <span class="k">public int</span> <span class="m">hi</span>() { <span class="k">return</span> hi; }
+}</pre>
+      </figure>
 
-        function demonstrateAbstraction() {
-            const output = document.getElementById('abstractionOutput');
-            output.innerHTML = `
-<strong>🎨 Abstraction in Action!</strong><br>
-<br>
-<strong>Circle(radius=5)</strong><br>
-Drawing a circle...<br>
-Area: 78.50 square units<br>
-<br>
-<strong>Rectangle(width=4, height=6)</strong><br>
-Drawing a rectangle...<br>
-Area: 24.00 square units<br>
-<br>
-<strong>What's Hidden?</strong><br>
-✓ Calculation complexity (hidden)<br>
-✓ Drawing implementation (hidden)<br>
-✓ How each shape stores data (hidden)<br>
-<br>
-<strong>What's Shown?</strong><br>
-✓ Simple methods: draw() and calculateArea()<br>
-✓ Easy to use, no need to understand internals!
-            `;
-            output.style.display = 'block';
-        }
+      <h3>Access modifiers, precisely</h3>
 
-        // Smooth scroll to section
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    document.querySelector('.content').scrollTop = 0;
-                });
-            });
-        });
-    </script>
+      <p>The four access levels are frequently misordered in textbooks. <code>protected</code> is <em>wider</em> than package-private, not narrower: it grants package access and additionally grants subclass access from other packages.</p>
+
+      <div class="tw">
+        <table>
+          <thead><tr><th>Modifier</th><th>Same class</th><th>Same package</th><th>Subclass, other package</th><th>Anywhere</th></tr></thead>
+          <tbody>
+            <tr><td><code>private</code></td><td class="yes">yes</td><td class="no">no</td><td class="no">no</td><td class="no">no</td></tr>
+            <tr><td><em>(none)</em> package-private</td><td class="yes">yes</td><td class="yes">yes</td><td class="no">no</td><td class="no">no</td></tr>
+            <tr><td><code>protected</code></td><td class="yes">yes</td><td class="yes">yes</td><td class="yes">yes<sup>&dagger;</sup></td><td class="no">no</td></tr>
+            <tr><td><code>public</code></td><td class="yes">yes</td><td class="yes">yes</td><td class="yes">yes</td><td class="yes">yes</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p style="font-size:.9rem;color:var(--ink-3)"><sup>&dagger;</sup> With a restriction (JLS §6.6.2): outside the declaring package, a subclass may access a <code>protected</code> instance member only through a reference whose type is that subclass or a subtype of it. A <code>Sub</code> cannot use its inherited <code>protected</code> access to reach into an arbitrary <code>Super</code> instance.</p>
+
+      <div class="block pitfall">
+        <span class="tag">Pitfall</span>
+        <p>A <code>protected</code> member is part of your public API for every subclass, forever. It is a commitment as binding as a <code>public</code> method, but it is easy to add carelessly because it feels internal. Prefer <code>private</code> with a <code>protected</code> hook only where extension is an explicit design goal.</p>
+      </div>
+
+      <h3>Representation exposure</h3>
+
+      <p>Declaring a field <code>private</code> protects the <em>reference</em>, not the object it points to. If a constructor stores a caller's mutable object, or a getter hands out the internal one, the encapsulation is decorative: clients can mutate your state without calling any of your methods.</p>
+
+      <figure class="code">
+        <figcaption>Leaking the representation, twice</figcaption>
+<pre><span class="k">final class</span> <span class="t">Enrolment</span> {
+    <span class="k">private final</span> <span class="t">List</span>&lt;<span class="t">String</span>&gt; students;
+
+    <span class="t">Enrolment</span>(<span class="t">List</span>&lt;<span class="t">String</span>&gt; students) { <span class="k">this</span>.students = students; }  <span class="c">// leak 1: aliased in</span>
+    <span class="t">List</span>&lt;<span class="t">String</span>&gt; <span class="m">students</span>()  { <span class="k">return</span> students; }               <span class="c">// leak 2: aliased out</span>
+}
+
+<span class="t">List</span>&lt;<span class="t">String</span>&gt; roll = <span class="k">new</span> <span class="t">ArrayList</span>&lt;&gt;(<span class="t">List</span>.<span class="m">of</span>(<span class="s">"Ada"</span>));
+<span class="t">Enrolment</span> e = <span class="k">new</span> <span class="t">Enrolment</span>(roll);
+roll.<span class="m">clear</span>();                  <span class="c">// mutates e's state from outside</span>
+e.<span class="m">students</span>().<span class="m">add</span>(<span class="s">"ghost"</span>);     <span class="c">// and again, through the getter</span></pre>
+      </figure>
+
+      <figure class="code">
+        <figcaption>Closed, by copying on both boundaries</figcaption>
+<pre><span class="k">final class</span> <span class="t">Enrolment</span> {
+    <span class="k">private final</span> <span class="t">List</span>&lt;<span class="t">String</span>&gt; students;
+
+    <span class="t">Enrolment</span>(<span class="t">List</span>&lt;<span class="t">String</span>&gt; students) {
+        <span class="k">this</span>.students = <span class="t">List</span>.<span class="m">copyOf</span>(students);   <span class="c">// snapshot, rejects null elements</span>
+    }
+    <span class="t">List</span>&lt;<span class="t">String</span>&gt; <span class="m">students</span>() { <span class="k">return</span> students; }  <span class="c">// safe: the list is immutable</span>
+}</pre>
+      </figure>
+
+      <div class="block rule">
+        <span class="tag">Working rule</span>
+        <p>Distinguish <em>unmodifiable</em> from <em>immutable</em>. <code>Collections.unmodifiableList(xs)</code> returns a view: it rejects mutation through the view but still reflects later changes to <code>xs</code>. <code>List.copyOf(xs)</code> takes a snapshot and is genuinely immutable. Only the second is safe to return from a getter when the source list is still reachable elsewhere.</p>
+      </div>
+
+      <h3>Records</h3>
+
+      <p>Records (Java 16+) make the common case declarative. A record gives you final fields, a canonical constructor, accessors, and consistent <code>equals</code>, <code>hashCode</code> and <code>toString</code>. They do not give you invariant checking or deep immutability for free — a compact constructor supplies the first, and defensive copying is still yours to write.</p>
+
+      <figure class="code">
+        <figcaption>A record with a validated, defensively copied representation</figcaption>
+<pre><span class="k">record</span> <span class="t">Enrolment</span>(<span class="t">String</span> code, <span class="t">List</span>&lt;<span class="t">String</span>&gt; students) {
+    <span class="t">Enrolment</span> {                                  <span class="c">// compact constructor</span>
+        <span class="t">Objects</span>.<span class="m">requireNonNull</span>(code);
+        <span class="k">if</span> (students.<span class="m">isEmpty</span>()) <span class="k">throw new</span> <span class="t">IllegalArgumentException</span>(<span class="s">"empty"</span>);
+        students = <span class="t">List</span>.<span class="m">copyOf</span>(students);           <span class="c">// reassigning the parameter</span>
+    }                                                <span class="c">// is how a record copies defensively</span>
+}</pre>
+      </figure>
+
+      <div class="ex">
+        <h3>Exercises</h3>
+        <ol>
+          <li><b>3.1</b> A <code>Period</code> class stores <code>private final Date start, end</code> with the invariant <code>start &lt;= end</code>, validates in the constructor, and exposes both via getters. Show that the invariant can still be violated, and repair the class without changing its public signature.</li>
+          <li><b>3.2</b> Explain why an immutable class may cache its <code>hashCode</code> in a non-final field without synchronization, and what property of the computation makes the benign race benign.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============ 04 ============ -->
+    <section class="ch" id="ch4">
+      <div class="ch-head">
+        <span class="ch-num">04</span>
+        <h2>Inheritance and dynamic dispatch</h2>
+      </div>
+
+      <p>Two independent questions get conflated under the word "inheritance". <em>Subtyping</em> is a statement about types: a <code>Circle</code> may be used wherever a <code>Shape</code> is expected. <em>Subclassing</em> is a statement about implementation: <code>Circle</code> inherits <code>Shape</code>'s members. Java's <code>extends</code> couples them; <code>implements</code> gives subtyping without inherited state. Much of good design consists of wanting the first and avoiding the second.</p>
+
+      <div class="block spec">
+        <span class="tag">Specification &middot; JLS §8.4.8</span>
+        <p>An instance method <code>m</code> in a subclass <strong>overrides</strong> a superclass method when it has the same name and the same erased parameter types. The overriding method must not reduce visibility, must have a return type that is the same or a subtype (covariant return, Java 5+), and must not declare broader <em>checked</em> exceptions. Same name with different parameter types is <strong>overloading</strong>, which is a distinct mechanism resolved at compile time.</p>
+      </div>
+
+      <div class="tw">
+        <table>
+          <thead><tr><th>Member kind</th><th>Overridable</th><th>Resolved on</th><th>Mechanism</th></tr></thead>
+          <tbody>
+            <tr><td>instance method</td><td class="yes">yes</td><td>runtime type</td><td>virtual dispatch</td></tr>
+            <tr><td><code>static</code> method</td><td class="no">no</td><td>static type</td><td>hiding</td></tr>
+            <tr><td><code>private</code> method</td><td class="no">no</td><td>static type</td><td>not inherited</td></tr>
+            <tr><td><code>final</code> method</td><td class="no">no</td><td>runtime type</td><td>dispatch, but fixed target</td></tr>
+            <tr><td>field</td><td class="no">no</td><td>static type</td><td>hiding</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>That last row is the one that surprises people. Fields are never polymorphic. A field access is bound at compile time using the static type of the expression, so an object can have two fields of the same name — one from each level — and which one you read depends on the type of the reference you read it through.</p>
+
+      <div class="widget">
+        <div class="widget-h"><span class="tag">Puzzle</span><span class="ttl">Fields hide, methods override</span></div>
+        <div class="widget-b">
+          <div class="puz">
+            <figure class="code" style="margin-top:0">
+              <figcaption>4 &middot; One object, two <code>name</code> fields</figcaption>
+<pre><span class="k">class</span> <span class="t">Base</span>    { <span class="t">String</span> name = <span class="s">"Base"</span>;    <span class="t">String</span> <span class="m">who</span>() { <span class="k">return</span> <span class="s">"Base"</span>; } }
+<span class="k">class</span> <span class="t">Derived</span> <span class="k">extends</span> <span class="t">Base</span> {
+                  <span class="t">String</span> name = <span class="s">"Derived"</span>; <span class="t">String</span> <span class="m">who</span>() { <span class="k">return</span> <span class="s">"Derived"</span>; } }
+
+<span class="t">Derived</span> d = <span class="k">new</span> <span class="t">Derived</span>();
+<span class="t">Base</span>    b = d;                       <span class="c">// same object, wider static type</span>
+
+<span class="t">System</span>.out.<span class="m">println</span>(d.name + <span class="s">" / "</span> + d.<span class="m">who</span>());
+<span class="t">System</span>.out.<span class="m">println</span>(b.name + <span class="s">" / "</span> + b.<span class="m">who</span>());</pre>
+            </figure>
+            <div class="btnrow"><button class="btn ghost" type="button" data-reveal="p4">Reveal</button></div>
+            <div class="answer" id="p4" hidden>
+              <span class="out">Derived / Derived<br>Base / Derived</span>
+              <p>The object really does contain two <code>String</code> fields named <code>name</code>. The compiler picks which one to read from the static type of the expression: through <code>d</code> (type <code>Derived</code>) it reads <code>Derived.name</code>; through <code>b</code> (type <code>Base</code>) it reads <code>Base.name</code>. No dispatch is involved — the field offset is fixed in the bytecode.</p>
+              <p><code>who()</code> behaves differently because it is a virtual call. Both expressions compile to an <code>invokevirtual</code> on the same method signature, and the JVM resolves the target from the object's actual class, which is <code>Derived</code> in both lines.</p>
+              <p>Field hiding is almost never intentional. Treat a repeated field name in a subclass as a bug until proven otherwise.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3>What the declared type controls</h3>
+
+      <p>It helps to separate two roles. The <strong>static type</strong> of an expression determines which members you are permitted to name and which overload is selected. The <strong>runtime type</strong> determines which override actually executes. The resolver below applies both rules to a small hierarchy.</p>
+
+      <figure class="code">
+        <figcaption>The hierarchy used by the resolver</figcaption>
+<pre><span class="k">class</span> <span class="t">Shape</span> {
+    <span class="k">void</span> <span class="m">draw</span>()                 { print(<span class="s">"Shape.draw"</span>); }
+    <span class="k">void</span> <span class="m">scale</span>(<span class="k">double</span> f)       { print(<span class="s">"Shape.scale(double)"</span>); }
+}
+<span class="k">class</span> <span class="t">Round</span> <span class="k">extends</span> <span class="t">Shape</span> {
+    <span class="k">@Override void</span> <span class="m">draw</span>()       { print(<span class="s">"Round.draw"</span>); }
+    <span class="k">void</span> <span class="m">scale</span>(<span class="k">int</span> f)          { print(<span class="s">"Round.scale(int)"</span>); }   <span class="c">// OVERLOAD, not override</span>
+}
+<span class="k">class</span> <span class="t">Circle</span> <span class="k">extends</span> <span class="t">Round</span> {
+    <span class="k">@Override void</span> <span class="m">draw</span>()       { print(<span class="s">"Circle.draw"</span>); }
+    <span class="k">double</span> <span class="m">radius</span>()            { <span class="k">return</span> <span class="n">1.0</span>; }
+}</pre>
+      </figure>
+
+      <div class="widget">
+        <div class="widget-h"><span class="tag">Resolver</span><span class="ttl">Which method body runs?</span></div>
+        <div class="widget-b">
+          <div class="ctrls">
+            <label class="ctrl"><span>Declared type</span>
+              <select id="dType">
+                <option value="Shape">Shape</option>
+                <option value="Round">Round</option>
+                <option value="Circle" selected>Circle</option>
+              </select>
+            </label>
+            <label class="ctrl"><span>Runtime type</span>
+              <select id="rType"></select>
+            </label>
+            <label class="ctrl"><span>Call expression</span>
+              <select id="callSel">
+                <option value="draw">x.draw()</option>
+                <option value="scale_int" selected>x.scale(2)</option>
+                <option value="scale_dbl">x.scale(2.0)</option>
+                <option value="radius">x.radius()</option>
+              </select>
+            </label>
+          </div>
+          <div class="verdict" id="dispatchOut"></div>
+        </div>
+      </div>
+
+      <div class="block pitfall">
+        <span class="tag">Pitfall &middot; the fragile base class</span>
+        <p>A subclass that overrides methods depends on the superclass's <em>internal</em> call graph, which is not part of its documented contract. <code>HashSet.addAll</code> happens to call <code>add</code> in the current implementation; a subclass that counts insertions by overriding both will double-count. A later release may change that call graph without breaking any published contract, and your subclass breaks. This is the concrete argument behind "favour composition over inheritance" (Chapter 07).</p>
+      </div>
+
+      <div class="ex">
+        <h3>Exercises</h3>
+        <ol>
+          <li><b>4.1</b> In the resolver's hierarchy, add a method to <code>Circle</code> that legally overrides <code>Shape.scale(double)</code> and returns a value. State what the return type may be and why.</li>
+          <li><b>4.2</b> Declare <code>static void f()</code> in both <code>Base</code> and <code>Derived</code>. Show that <code>((Base) new Derived()).f()</code> calls <code>Base.f</code> and explain, in terms of the bytecode instruction emitted, why <code>@Override</code> on <code>Derived.f</code> would be a compile error.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============ 05 ============ -->
+    <section class="ch" id="ch5">
+      <div class="ch-head">
+        <span class="ch-num">05</span>
+        <h2>Overload resolution happens at compile time</h2>
+      </div>
+
+      <p>Overriding and overloading are unrelated mechanisms that share a syntax. Overriding is resolved by the JVM from the object's class. Overloading is resolved entirely by the compiler from the static types of the argument expressions, and the chosen signature is then fixed in the bytecode. A method call in Java is therefore resolved in two stages: the compiler picks the <em>signature</em>, and the JVM picks the <em>body</em>.</p>
+
+      <div class="block spec">
+        <span class="tag">Specification &middot; JLS §15.12.2</span>
+        <p>Applicable methods are sought in three phases, and the search stops at the first phase that finds any candidate:</p>
+        <ol class="prose" style="margin-top:.5rem">
+          <li><strong>Phase 1</strong> — strict invocation: subtyping and widening primitive conversion only. No boxing, no unboxing, no varargs.</li>
+          <li><strong>Phase 2</strong> — loose invocation: boxing and unboxing now permitted. Still no varargs.</li>
+          <li><strong>Phase 3</strong> — variable-arity invocation: varargs considered.</li>
+        </ol>
+        <p style="margin-top:.5rem">Within the successful phase, the <em>most specific</em> applicable method wins; if no candidate is strictly more specific than all others, the call is ambiguous and does not compile.</p>
+      </div>
+
+      <p>The three-phase rule has a consequence students consistently get wrong: a widening primitive conversion beats boxing, because it is available a whole phase earlier.</p>
+
+      <div class="widget">
+        <div class="widget-h"><span class="tag">Puzzle</span><span class="ttl">Three resolution traps</span></div>
+        <div class="widget-b">
+
+          <div class="puz">
+            <figure class="code" style="margin-top:0">
+              <figcaption>5 &middot; Static type, not runtime type</figcaption>
+<pre><span class="k">static void</span> <span class="m">f</span>(<span class="t">Object</span> o) { print(<span class="s">"Object"</span>); }
+<span class="k">static void</span> <span class="m">f</span>(<span class="t">String</span> s) { print(<span class="s">"String"</span>); }
+
+<span class="t">Object</span> o = <span class="s">"hello"</span>;
+<span class="m">f</span>(o);
+<span class="m">f</span>(<span class="s">"hello"</span>);
+<span class="m">f</span>((<span class="t">Object</span>) <span class="s">"hello"</span>);
+<span class="m">f</span>(<span class="k">null</span>);</pre>
+            </figure>
+            <div class="btnrow"><button class="btn ghost" type="button" data-reveal="p5">Reveal</button></div>
+            <div class="answer" id="p5" hidden>
+              <span class="out">Object / String / Object / String</span>
+              <p><code>f(o)</code> prints <code>Object</code>. The runtime class of <code>o</code> is <code>String</code>, but overload resolution never consults runtime types — the static type of <code>o</code> is <code>Object</code>, so only <code>f(Object)</code> is applicable. This is the crispest demonstration that overloading is not polymorphism.</p>
+              <p><code>f("hello")</code> prints <code>String</code>: both overloads are applicable, and <code>String</code> is more specific than <code>Object</code>. A cast changes the static type and therefore changes the answer.</p>
+              <p><code>f(null)</code> prints <code>String</code>. The null literal is assignable to both parameter types, so both are applicable, and the most-specific rule picks <code>String</code>. Add a third overload <code>f(Integer)</code> and the same call stops compiling: <code>String</code> and <code>Integer</code> are unrelated, neither is more specific, and the invocation is ambiguous.</p>
+            </div>
+          </div>
+
+          <div class="puz">
+            <figure class="code">
+              <figcaption>6 &middot; Widening beats boxing</figcaption>
+<pre><span class="k">static void</span> <span class="m">g</span>(<span class="k">long</span> x)     { print(<span class="s">"long"</span>); }
+<span class="k">static void</span> <span class="m">g</span>(<span class="t">Integer</span> x)  { print(<span class="s">"Integer"</span>); }
+<span class="k">static void</span> <span class="m">g</span>(<span class="k">int</span>... x)   { print(<span class="s">"varargs"</span>); }
+
+<span class="m">g</span>(<span class="n">1</span>);</pre>
+            </figure>
+            <div class="btnrow"><button class="btn ghost" type="button" data-reveal="p6">Reveal</button></div>
+            <div class="answer" id="p6" hidden>
+              <span class="out">long</span>
+              <p>Phase 1 permits widening primitive conversion, so <code>g(long)</code> is applicable immediately with <code>int</code> → <code>long</code>. Resolution stops there. <code>g(Integer)</code> would need boxing, which is phase 2; <code>g(int...)</code> is phase 3. Neither is ever considered.</p>
+              <p>Delete <code>g(long)</code> and the answer becomes <code>Integer</code>, because phase 2 now succeeds. Delete that too and it becomes <code>varargs</code>. The phases are strictly ordered, and a candidate in an earlier phase always wins regardless of how much "closer" a later candidate looks.</p>
+            </div>
+          </div>
+
+          <div class="puz">
+            <figure class="code">
+              <figcaption>7 &middot; Overload plus override together</figcaption>
+<pre><span class="k">class</span> <span class="t">A</span> { <span class="k">void</span> <span class="m">h</span>(<span class="t">Object</span> o) { print(<span class="s">"A.h(Object)"</span>); } }
+<span class="k">class</span> <span class="t">B</span> <span class="k">extends</span> <span class="t">A</span> {
+    <span class="k">@Override void</span> <span class="m">h</span>(<span class="t">Object</span> o) { print(<span class="s">"B.h(Object)"</span>); }
+    <span class="k">void</span> <span class="m">h</span>(<span class="t">String</span> s)           { print(<span class="s">"B.h(String)"</span>); }
+}
+
+<span class="t">A</span> x = <span class="k">new</span> <span class="t">B</span>();
+x.<span class="m">h</span>(<span class="s">"hello"</span>);</pre>
+            </figure>
+            <div class="btnrow"><button class="btn ghost" type="button" data-reveal="p7">Reveal</button></div>
+            <div class="answer" id="p7" hidden>
+              <span class="out">B.h(Object)</span>
+              <p>Both stages are in play, in order. The compiler resolves the overload against the static type <code>A</code>, which declares only <code>h(Object)</code> — <code>B.h(String)</code> is invisible through an <code>A</code> reference, so the bytecode names the signature <code>h(Object)</code>. Then the JVM dispatches that signature on the runtime type <code>B</code> and finds <code>B</code>'s override.</p>
+              <p>The result is a method in <code>B</code>, but not the one that looks like the better match. Changing the declared type of <code>x</code> to <code>B</code> changes the output to <code>B.h(String)</code> without touching the object.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="block rule">
+        <span class="tag">Working rule</span>
+        <p>Overloads whose parameter types are related by subtyping, boxing, or arity are a standing hazard. Prefer distinct method names (<code>fromString</code>, <code>fromInt</code>) over overloads that differ only in a way the reader must run the three-phase algorithm to resolve. When you must overload, keep the arities different — a reader can resolve that by counting.</p>
+      </div>
+
+      <div class="ex">
+        <h3>Exercises</h3>
+        <ol>
+          <li><b>5.1</b> <code>List.remove</code> is overloaded as <code>remove(int)</code> and <code>remove(Object)</code>. For <code>List&lt;Integer&gt; xs</code>, determine what <code>xs.remove(1)</code> does versus <code>xs.remove(Integer.valueOf(1))</code>, and name the phase that decides it.</li>
+          <li><b>5.2</b> Write three overloads such that adding a fourth, more specific overload changes the meaning of an existing call site without any error or warning. Explain why this makes overloading a source-compatibility hazard for library authors.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============ 06 ============ -->
+    <section class="ch" id="ch6">
+      <div class="ch-head">
+        <span class="ch-num">06</span>
+        <h2>Abstract classes and interfaces</h2>
+      </div>
+
+      <p>Since Java 8 gave interfaces <code>default</code> methods, the two mechanisms overlap substantially, and the old summary — "interfaces cannot have code" — is obsolete. The remaining distinction is sharp and worth stating exactly: an abstract class can hold <strong>state</strong> and you get only one; an interface cannot hold instance state and you can implement many.</p>
+
+      <div class="tw">
+        <table>
+          <thead><tr><th></th><th>Abstract class</th><th>Interface</th></tr></thead>
+          <tbody>
+            <tr><td>Instance fields</td><td class="yes">yes</td><td class="no">no (constants only)</td></tr>
+            <tr><td>Constructors</td><td class="yes">yes</td><td class="no">no</td></tr>
+            <tr><td>How many per class</td><td>one</td><td>many</td></tr>
+            <tr><td>Method bodies</td><td class="yes">yes</td><td class="yes"><code>default</code>, <code>static</code>, <code>private</code></td></tr>
+            <tr><td>Access levels</td><td>all four</td><td><code>public</code>, or <code>private</code> helpers</td></tr>
+            <tr><td>Can restrict implementors</td><td>via constructor access</td><td>via <code>sealed</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Default methods and the diamond</h3>
+
+      <p>Multiple inheritance of behaviour reintroduces the conflict that Java originally avoided: if two interfaces supply a <code>default</code> method with the same signature, which one does the implementing class inherit? Java resolves this with three ordered rules rather than an arbitrary linearization.</p>
+
+      <div class="block spec">
+        <span class="tag">Specification &middot; JLS §9.4.1</span>
+        <ol class="prose" style="margin-top:.4rem">
+          <li><strong>Classes win.</strong> A concrete method inherited from a superclass takes precedence over any interface default.</li>
+          <li><strong>The most specific interface wins.</strong> If one candidate interface is a subinterface of the other, its default is chosen.</li>
+          <li><strong>Otherwise it is an error.</strong> With unrelated candidates the class must override the method; it may delegate explicitly with <code>Interface.super.method()</code>.</li>
+        </ol>
+      </div>
+
+      <figure class="code">
+        <figcaption>Rule 3: an unresolvable diamond must be overridden</figcaption>
+<pre><span class="k">interface</span> <span class="t">Drawable</span>  { <span class="k">default</span> <span class="t">String</span> <span class="m">render</span>() { <span class="k">return</span> <span class="s">"pixels"</span>; } }
+<span class="k">interface</span> <span class="t">Printable</span> { <span class="k">default</span> <span class="t">String</span> <span class="m">render</span>() { <span class="k">return</span> <span class="s">"ink"</span>; } }
+
+<span class="k">class</span> <span class="t">Poster</span> <span class="k">implements</span> <span class="t">Drawable</span>, <span class="t">Printable</span> {
+    <span class="c">// Without this override: "class Poster inherits unrelated defaults for render()"</span>
+    <span class="k">@Override public</span> <span class="t">String</span> <span class="m">render</span>() {
+        <span class="k">return</span> <span class="t">Drawable</span>.<span class="k">super</span>.<span class="m">render</span>() + <span class="s">" + "</span> + <span class="t">Printable</span>.<span class="k">super</span>.<span class="m">render</span>();
+    }
+}</pre>
+      </figure>
+
+      <p>Note that <code>Interface.super.method()</code> is legal only for an interface the class <em>directly</em> implements. There is no way to reach a grandparent interface's default, which is a deliberate restriction: it keeps the resolution rules local and decidable.</p>
+
+      <h3>Two shapes for the same problem</h3>
+
+      <p>The choice between an abstract class and an interface usually shows up as a choice between two patterns. Template Method fixes the algorithm in a superclass and leaves holes; Strategy keeps the algorithm in a collaborator and injects it. They solve the same problem with opposite dependency structures.</p>
+
+      <figure class="code">
+        <figcaption>Template Method — variation by subclassing</figcaption>
+<pre><span class="k">abstract class</span> <span class="t">Report</span> {
+    <span class="k">public final</span> <span class="t">String</span> <span class="m">build</span>() {           <span class="c">// final: the skeleton is not a hook</span>
+        <span class="k">return</span> <span class="m">header</span>() + <span class="m">body</span>() + <span class="m">footer</span>();
+    }
+    <span class="k">protected</span> <span class="t">String</span> <span class="m">header</span>() { <span class="k">return</span> <span class="s">"=== report ===\n"</span>; }
+    <span class="k">protected abstract</span> <span class="t">String</span> <span class="m">body</span>();       <span class="c">// the single required hook</span>
+    <span class="k">protected</span> <span class="t">String</span> <span class="m">footer</span>() { <span class="k">return</span> <span class="s">"\n"</span>; }
+}</pre>
+      </figure>
+
+      <figure class="code">
+        <figcaption>Strategy — variation by composition</figcaption>
+<pre><span class="k">interface</span> <span class="t">Body</span> { <span class="t">String</span> <span class="m">text</span>(); }
+
+<span class="k">final class</span> <span class="t">Report</span> {
+    <span class="k">private final</span> <span class="t">Body</span> body;
+    <span class="t">Report</span>(<span class="t">Body</span> body) { <span class="k">this</span>.body = <span class="t">Objects</span>.<span class="m">requireNonNull</span>(body); }
+    <span class="k">public</span> <span class="t">String</span> <span class="m">build</span>() { <span class="k">return</span> <span class="s">"=== report ===\n"</span> + body.<span class="m">text</span>() + <span class="s">"\n"</span>; }
+}
+
+<span class="k">new</span> <span class="t">Report</span>(() -&gt; <span class="s">"totals: 12"</span>).<span class="m">build</span>();   <span class="c">// lambda: Body is a functional interface</span></pre>
+      </figure>
+
+      <div class="block rule">
+        <span class="tag">Working rule</span>
+        <p>Reach for an interface by default: it permits multiple implementation, admits lambdas when it has a single abstract method, and does not spend the one inheritance slot. Choose an abstract class when subclasses must share <em>state</em> or a non-public constructor, and when you intend to control extension. If a type is meant to be extended, say so in its documentation and make the extension points explicit — every other method should be <code>final</code> or <code>private</code>.</p>
+      </div>
+
+      <h3>Sealed hierarchies</h3>
+
+      <p>Java 17's <code>sealed</code> lets a type enumerate its permitted subtypes. This converts an open hierarchy into a closed sum type, which in turn lets the compiler verify that a <code>switch</code> is exhaustive — so adding a variant produces a compile error at every site that must handle it, rather than a runtime surprise.</p>
+
+      <figure class="code">
+        <figcaption>A closed hierarchy with an exhaustive switch</figcaption>
+<pre><span class="k">sealed interface</span> <span class="t">Expr</span> <span class="k">permits</span> <span class="t">Num</span>, <span class="t">Add</span>, <span class="t">Neg</span> {}
+<span class="k">record</span> <span class="t">Num</span>(<span class="k">double</span> v)              <span class="k">implements</span> <span class="t">Expr</span> {}
+<span class="k">record</span> <span class="t">Add</span>(<span class="t">Expr</span> l, <span class="t">Expr</span> r)        <span class="k">implements</span> <span class="t">Expr</span> {}
+<span class="k">record</span> <span class="t">Neg</span>(<span class="t">Expr</span> e)              <span class="k">implements</span> <span class="t">Expr</span> {}
+
+<span class="k">static double</span> <span class="m">eval</span>(<span class="t">Expr</span> e) {
+    <span class="k">return switch</span> (e) {                    <span class="c">// no default needed: provably exhaustive</span>
+        <span class="k">case</span> <span class="t">Num</span>(<span class="k">double</span> v)      -&gt; v;
+        <span class="k">case</span> <span class="t">Add</span>(<span class="t">Expr</span> l, <span class="t">Expr</span> r) -&gt; <span class="m">eval</span>(l) + <span class="m">eval</span>(r);
+        <span class="k">case</span> <span class="t">Neg</span>(<span class="t">Expr</span> x)        -&gt; -<span class="m">eval</span>(x);
+    };
+}</pre>
+      </figure>
+
+      <p>This is worth contrasting with the classical object-oriented answer, which would put an abstract <code>eval()</code> on <code>Expr</code> and override it in each subtype. The two arrangements differ in what is cheap to change: the polymorphic version makes adding a <em>variant</em> easy and adding an <em>operation</em> invasive; the sealed-plus-switch version reverses that. This trade-off is the expression problem, and neither side of it is the wrong answer in general.</p>
+
+      <div class="ex">
+        <h3>Exercises</h3>
+        <ol>
+          <li><b>6.1</b> Give a case where rule 1 ("classes win") produces behaviour a reader would not predict: a class inherits a concrete method from its superclass that silently shadows a <code>default</code> the class appears to have opted into by implementing the interface.</li>
+          <li><b>6.2</b> Take the <code>Expr</code> hierarchy and add a <code>Mul</code> variant. List every compile error this produces in the sealed version, then do the same for a polymorphic version, and use the difference to state the expression problem in your own words.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============ 07 ============ -->
+    <section class="ch" id="ch7">
+      <div class="ch-head">
+        <span class="ch-num">07</span>
+        <h2>Substitutability and variance</h2>
+      </div>
+
+      <p>The compiler enforces that a subclass has the right <em>shape</em>: matching signatures, compatible return types, no narrowed access. It cannot enforce that the subclass has compatible <em>behaviour</em>. That obligation is the Liskov Substitution Principle, and violating it produces code that compiles and type-checks while breaking callers who did nothing wrong.</p>
+
+      <div class="block spec">
+        <span class="tag">Definition &middot; Liskov (1988)</span>
+        <p>If <code>S</code> is a subtype of <code>T</code>, then objects of type <code>T</code> may be replaced with objects of type <code>S</code> without altering any property that programs depend on. Concretely, an override may <strong>weaken</strong> preconditions (accept at least as much), must <strong>strengthen or preserve</strong> postconditions (promise at least as much), and must <strong>preserve</strong> every supertype invariant.</p>
+      </div>
+
+      <p>The standard counterexample is <code>Square extends Rectangle</code>. Geometrically a square is a rectangle; as a mutable type it is not a subtype, because <code>Rectangle</code>'s setters carry an implicit postcondition that <code>Square</code> cannot honour.</p>
+
+      <figure class="code">
+        <figcaption>A subtype relation that type-checks and is still wrong</figcaption>
+<pre><span class="k">class</span> <span class="t">Rectangle</span> {
+    <span class="k">protected int</span> w, h;
+    <span class="k">void</span> <span class="m">setW</span>(<span class="k">int</span> w) { <span class="k">this</span>.w = w; }   <span class="c">// postcondition: width == w AND height unchanged</span>
+    <span class="k">void</span> <span class="m">setH</span>(<span class="k">int</span> h) { <span class="k">this</span>.h = h; }
+    <span class="k">int</span> <span class="m">area</span>()          { <span class="k">return</span> w * h; }
+}
+<span class="k">class</span> <span class="t">Square</span> <span class="k">extends</span> <span class="t">Rectangle</span> {
+    <span class="k">@Override void</span> <span class="m">setW</span>(<span class="k">int</span> w) { <span class="k">this</span>.w = <span class="k">this</span>.h = w; }  <span class="c">// breaks "height unchanged"</span>
+    <span class="k">@Override void</span> <span class="m">setH</span>(<span class="k">int</span> h) { <span class="k">this</span>.w = <span class="k">this</span>.h = h; }
+}
+
+<span class="k">static void</span> <span class="m">check</span>(<span class="t">Rectangle</span> r) {
+    r.<span class="m">setW</span>(<span class="n">5</span>); r.<span class="m">setH</span>(<span class="n">4</span>);
+    assert r.<span class="m">area</span>() == <span class="n">20</span>;        <span class="c">// holds for Rectangle, fails for Square (16)</span>
+}</pre>
+      </figure>
+
+      <p>The method <code>check</code> is correct against <code>Rectangle</code>'s contract, and it fails when handed a <code>Square</code>. Nothing in the type system detected this. The resolutions are to make the type immutable (then <code>withW</code> returns a new object and the postcondition is expressible), or to drop the inheritance and let both implement a common read-only interface.</p>
+
+      <h3>Arrays are covariant; generics are not</h3>
+
+      <p>Java made arrays covariant in 1.0 — <code>String[]</code> is a subtype of <code>Object[]</code> — which is unsound, and the language pays for it with a runtime check on every array store. Generics, added later with full knowledge of that mistake, are invariant: <code>List&lt;String&gt;</code> is not a subtype of <code>List&lt;Object&gt;</code>. The wildcard syntax exists to recover the flexibility that invariance costs, without the unsoundness.</p>
+
+      <div class="widget">
+        <div class="widget-h"><span class="tag">Explorer</span><span class="ttl">Compiles, fails to compile, or fails at runtime</span></div>
+        <div class="widget-b">
+          <p style="font-size:.92rem;color:var(--ink-2);margin-bottom:.7rem">Select a row to see which rule decides it.</p>
+          <ul class="vlist" id="vlist"></ul>
+        </div>
+      </div>
+
+      <div class="block rule">
+        <span class="tag">Working rule &middot; PECS</span>
+        <p><strong>Producer <code>extends</code>, Consumer <code>super</code>.</strong> If a parameter is a source you read <code>T</code> values out of, declare <code>? extends T</code>. If it is a sink you write <code>T</code> values into, declare <code>? super T</code>. If you do both, you cannot use a wildcard and must take an exact <code>T</code>. This is why the signature of <code>Collections.copy</code> is <code>copy(List&lt;? super T&gt; dest, List&lt;? extends T&gt; src)</code>.</p>
+      </div>
+
+      <h3>Erasure</h3>
+
+      <p>Generics are a compile-time discipline. The compiler checks types, inserts casts, and then <em>erases</em> the type arguments; the bytecode for <code>List&lt;String&gt;</code> and <code>List&lt;Integer&gt;</code> is identical. Every generics restriction that feels arbitrary follows from this one implementation decision.</p>
+
+      <div class="tw">
+        <table>
+          <thead><tr><th>Restriction</th><th>Because erasure means…</th></tr></thead>
+          <tbody>
+            <tr><td><code>x instanceof List&lt;String&gt;</code> is illegal</td><td>there is no runtime record of the type argument to test</td></tr>
+            <tr><td><code>new T[n]</code> and <code>new List&lt;String&gt;[n]</code> are illegal</td><td>the array's runtime store check could not be generated soundly</td></tr>
+            <tr><td><code>new T()</code> is illegal</td><td>no constructor is known at the erased call site</td></tr>
+            <tr><td><code>f(List&lt;String&gt;)</code> and <code>f(List&lt;Integer&gt;)</code> cannot coexist</td><td>both erase to <code>f(List)</code> — a clash, not an overload</td></tr>
+            <tr><td>a type parameter cannot be <code>static</code></td><td>the class has one runtime representation shared by all instantiations</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Composition over inheritance</h3>
+
+      <p>The fragile base class problem from Chapter 04, made concrete. The goal is a <code>Set</code> that counts attempted insertions.</p>
+
+      <figure class="code">
+        <figcaption>By inheritance — reports 6 after adding 3 elements</figcaption>
+<pre><span class="k">class</span> <span class="t">CountingSet</span>&lt;<span class="t">E</span>&gt; <span class="k">extends</span> <span class="t">HashSet</span>&lt;<span class="t">E</span>&gt; {
+    <span class="k">private int</span> attempts = <span class="n">0</span>;
+    <span class="k">@Override public boolean</span> <span class="m">add</span>(<span class="t">E</span> e) { attempts++; <span class="k">return super</span>.<span class="m">add</span>(e); }
+    <span class="k">@Override public boolean</span> <span class="m">addAll</span>(<span class="t">Collection</span>&lt;? <span class="k">extends</span> <span class="t">E</span>&gt; c) {
+        attempts += c.<span class="m">size</span>(); <span class="k">return super</span>.<span class="m">addAll</span>(c);   <span class="c">// which internally calls add()</span>
+    }
+    <span class="k">public int</span> <span class="m">attempts</span>() { <span class="k">return</span> attempts; }
+}
+<span class="c">// addAll of 3 elements: +3 here, then +1 per element from HashSet.addAll -&gt; 6</span></pre>
+      </figure>
+
+      <figure class="code">
+        <figcaption>By composition — correct, and independent of the delegate's internals</figcaption>
+<pre><span class="k">class</span> <span class="t">CountingSet</span>&lt;<span class="t">E</span>&gt; <span class="k">implements</span> <span class="t">Set</span>&lt;<span class="t">E</span>&gt; {
+    <span class="k">private final</span> <span class="t">Set</span>&lt;<span class="t">E</span>&gt; delegate;
+    <span class="k">private int</span> attempts = <span class="n">0</span>;
+
+    <span class="t">CountingSet</span>(<span class="t">Set</span>&lt;<span class="t">E</span>&gt; delegate) { <span class="k">this</span>.delegate = delegate; }
+
+    <span class="k">@Override public boolean</span> <span class="m">add</span>(<span class="t">E</span> e) { attempts++; <span class="k">return</span> delegate.<span class="m">add</span>(e); }
+    <span class="k">@Override public boolean</span> <span class="m">addAll</span>(<span class="t">Collection</span>&lt;? <span class="k">extends</span> <span class="t">E</span>&gt; c) {
+        <span class="k">boolean</span> changed = <span class="k">false</span>;
+        <span class="k">for</span> (<span class="t">E</span> e : c) changed |= <span class="m">add</span>(e);      <span class="c">// our add, counted exactly once</span>
+        <span class="k">return</span> changed;
+    }
+    <span class="c">// ... remaining Set methods delegate verbatim</span>
+    <span class="k">public int</span> <span class="m">attempts</span>() { <span class="k">return</span> attempts; }
+}</pre>
+      </figure>
+
+      <p>The composed version is longer, and that verbosity is the entire cost. In exchange it depends only on <code>Set</code>'s published contract, works with any <code>Set</code> implementation passed in, and cannot be broken by a change to <code>HashSet</code>'s internals. Inherit only when the subclass genuinely <em>is</em> a specialization of the superclass and the superclass was designed and documented for extension.</p>
+
+      <div class="ex">
+        <h3>Exercises</h3>
+        <ol>
+          <li><b>7.1</b> Give the exact declaration of a method that copies from any source of <code>T</code> or its subtypes into any sink accepting <code>T</code> or its supertypes. Then explain why swapping the two wildcards makes the body fail to compile.</li>
+          <li><b>7.2</b> <code>Stack&lt;E&gt;</code> has <code>push(E)</code> and <code>pop()</code>. Add <code>pushAll(Iterable&lt;? extends E&gt;)</code> and <code>popAll(Collection&lt;? super E&gt;)</code> and justify each wildcard by PECS. State what breaks if both use <code>? extends E</code>.</li>
+          <li><b>7.3</b> <code>Properties</code> extends <code>Hashtable&lt;Object,Object&gt;</code> but is documented to hold only <code>String</code> keys and values. Explain which LSP clause this violates and what it costs a caller.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============ 08 ============ -->
+    <section class="ch" id="ch8">
+      <div class="ch-head">
+        <span class="ch-num">08</span>
+        <h2>The <code>Object</code> contract</h2>
+      </div>
+
+      <p>Every class inherits <code>equals</code>, <code>hashCode</code> and <code>toString</code> from <code>Object</code>, along with obligations attached to them. These are not stylistic conventions: the collections framework is written against them, and a class that violates them produces data structures that lose elements with no exception thrown.</p>
+
+      <div class="block spec">
+        <span class="tag">Specification &middot; java.lang.Object</span>
+        <p><code>equals</code> must be <strong>reflexive</strong> (<code>x.equals(x)</code>), <strong>symmetric</strong> (<code>x.equals(y) == y.equals(x)</code>), <strong>transitive</strong>, and <strong>consistent</strong> across repeated calls; <code>x.equals(null)</code> must be <code>false</code>.</p>
+        <p><code>hashCode</code> must return the same value on repeated calls, and <strong>equal objects must have equal hash codes</strong>. Unequal objects need not differ, but should, for performance.</p>
+      </div>
+
+      <p>The two contracts are coupled in one direction only, and that asymmetry is where the bugs live. Overriding <code>equals</code> without <code>hashCode</code> leaves the inherited identity-based hash, so two equal objects land in different buckets and a hash-based collection never compares them.</p>
+
+      <div class="widget">
+        <div class="widget-h"><span class="tag">Checker</span><span class="ttl">Which collection behaviour breaks?</span></div>
+        <div class="widget-b">
+          <p style="font-size:.92rem;color:var(--ink-2);margin-bottom:.7rem">Uncheck a clause to violate it, and see what the collections framework does in response.</p>
+          <div class="toggles">
+            <label class="tg"><input type="checkbox" id="cReflexive" checked><span><b>reflexive</b> — x.equals(x)</span></label>
+            <label class="tg"><input type="checkbox" id="cSymmetric" checked><span><b>symmetric</b> — both directions agree</span></label>
+            <label class="tg"><input type="checkbox" id="cTransitive" checked><span><b>transitive</b> — a=b, b=c &rArr; a=c</span></label>
+            <label class="tg"><input type="checkbox" id="cHash" checked><span><b>hashCode</b> — consistent with equals</span></label>
+          </div>
+          <div class="verdict" id="contractOut"></div>
+        </div>
+      </div>
+
+      <h3>Why symmetry is hard under inheritance</h3>
+
+      <p>There are two ways to write the type test in <code>equals</code>, and both have a defect. <code>instanceof</code> accepts subclasses and therefore risks asymmetry; <code>getClass()</code> is symmetric but refuses to consider any subclass instance equal, which violates LSP for subclasses that add no state.</p>
+
+      <figure class="code">
+        <figcaption><code>instanceof</code>: asymmetric as soon as a subclass adds state</figcaption>
+<pre><span class="k">class</span> <span class="t">Point</span> {
+    <span class="k">final int</span> x, y;
+    <span class="k">@Override public boolean</span> <span class="m">equals</span>(<span class="t">Object</span> o) {
+        <span class="k">if</span> (!(o <span class="k">instanceof</span> <span class="t">Point</span> p)) <span class="k">return false</span>;
+        <span class="k">return</span> x == p.x &amp;&amp; y == p.y;                <span class="c">// ignores any extra subclass state</span>
+    }
+}
+<span class="k">class</span> <span class="t">ColourPoint</span> <span class="k">extends</span> <span class="t">Point</span> {
+    <span class="k">final</span> <span class="t">String</span> colour;
+    <span class="k">@Override public boolean</span> <span class="m">equals</span>(<span class="t">Object</span> o) {
+        <span class="k">if</span> (!(o <span class="k">instanceof</span> <span class="t">ColourPoint</span> c)) <span class="k">return false</span>;
+        <span class="k">return super</span>.<span class="m">equals</span>(o) &amp;&amp; colour.<span class="m">equals</span>(c.colour);
+    }
+}
+
+<span class="t">Point</span> p = <span class="k">new</span> <span class="t">Point</span>(<span class="n">1</span>, <span class="n">2</span>);
+<span class="t">ColourPoint</span> c = <span class="k">new</span> <span class="t">ColourPoint</span>(<span class="n">1</span>, <span class="n">2</span>, <span class="s">"red"</span>);
+p.<span class="m">equals</span>(c);   <span class="c">// true  - Point only compares x and y</span>
+c.<span class="m">equals</span>(p);   <span class="c">// false - p is not a ColourPoint</span>
+<span class="c">// Symmetry broken. list.contains(p) now depends on the list's iteration order.</span></pre>
+      </figure>
+
+      <div class="block rule">
+        <span class="tag">Working rule</span>
+        <p>There is no fully satisfying way to add a value component to an instantiable class and preserve both symmetry and substitutability — this is a real limitation, not a puzzle with a hidden answer. The practical resolutions: make value classes <code>final</code> (or use a <code>record</code>, which is implicitly final and generates a <code>getClass</code>-based <code>equals</code>); or favour composition, giving <code>ColourPoint</code> a <code>Point</code> field and an <code>asPoint()</code> view instead of extending it.</p>
+      </div>
+
+      <h3><code>compareTo</code> and the sorted collections</h3>
+
+      <p><code>Comparable</code> adds a further obligation that is easy to miss because most collections do not check it: <code>compareTo</code> should be <em>consistent with</em> <code>equals</code>, meaning <code>x.compareTo(y) == 0</code> exactly when <code>x.equals(y)</code>. Sorted collections use <code>compareTo</code> rather than <code>equals</code> for membership, so an inconsistent implementation makes <code>TreeSet</code> and <code>HashSet</code> disagree about the same elements.</p>
+
+      <figure class="code">
+        <figcaption><code>BigDecimal</code>: the canonical inconsistency in the standard library</figcaption>
+<pre><span class="t">BigDecimal</span> a = <span class="k">new</span> <span class="t">BigDecimal</span>(<span class="s">"1.0"</span>);
+<span class="t">BigDecimal</span> b = <span class="k">new</span> <span class="t">BigDecimal</span>(<span class="s">"1.00"</span>);
+
+a.<span class="m">equals</span>(b);          <span class="c">// false - equals compares unscaled value AND scale</span>
+a.<span class="m">compareTo</span>(b) == <span class="n">0</span>;  <span class="c">// true  - compareTo compares numeric value only</span>
+
+<span class="k">new</span> <span class="t">HashSet</span>&lt;&gt;(<span class="t">List</span>.<span class="m">of</span>(a, b)).<span class="m">size</span>();   <span class="c">// 2</span>
+<span class="k">new</span> <span class="t">TreeSet</span>&lt;&gt;(<span class="t">List</span>.<span class="m">of</span>(a, b)).<span class="m">size</span>();   <span class="c">// 1</span></pre>
+      </figure>
+
+      <h3>Why <code>clone()</code> should be avoided</h3>
+
+      <p><code>Cloneable</code> is the standard library's clearest design mistake, and it is instructive because every defect follows from a principle covered earlier. The interface declares no methods, so it does not express a contract; <code>Object.clone</code> is <code>protected</code>, so implementing the interface does not make cloning available to callers; the default implementation copies fields without invoking a constructor, so class invariants are never established; and the copy is shallow, so mutable fields end up aliased between original and clone. A copy constructor or static factory has none of these problems.</p>
+
+      <figure class="code">
+        <figcaption>Prefer a copy constructor or factory</figcaption>
+<pre><span class="k">public</span> <span class="t">Enrolment</span>(<span class="t">Enrolment</span> other) {             <span class="c">// runs the constructor: invariants hold</span>
+    <span class="k">this</span>(other.code, other.students);
+}
+<span class="k">public static</span> <span class="t">Enrolment</span> <span class="m">copyOf</span>(<span class="t">Enrolment</span> other) { <span class="k">return new</span> <span class="t">Enrolment</span>(other); }</pre>
+      </figure>
+
+      <div class="ex">
+        <h3>Exercises</h3>
+        <ol>
+          <li><b>8.1</b> Implement <code>equals</code> and <code>hashCode</code> for a <code>Money(long minorUnits, Currency currency)</code> value type. Then write a JUnit test that would actually fail if <code>hashCode</code> were omitted — note that a naive assertion on <code>a.equals(b)</code> passes regardless.</li>
+          <li><b>8.2</b> Build a <code>HashMap&lt;Key,String&gt;</code> where <code>Key</code> is mutable and is mutated after insertion. Show that the entry becomes unreachable through <code>get</code> while still being visible through <code>entrySet()</code>, and explain the mechanism in terms of bucket assignment.</li>
+          <li><b>8.3</b> <code>ColourPoint</code> above breaks symmetry. Rewrite it using composition so that no contract is violated, and state what capability the composed version loses relative to the inheriting version.</li>
+        </ol>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <span>Java Object Semantics &middot; course reference</span>
+  <span>Verify claims against the JLS, edition 21</span>
+  <span>Examples target Java 17+</span>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- theme ---------- */
+  var root = document.documentElement;
+  var btn = document.getElementById('themeBtn');
+  function stored(){ try { return localStorage.getItem('jos-theme'); } catch(e){ return null; } }
+  var init = stored();
+  if (init === 'dark' || init === 'light') root.setAttribute('data-theme', init);
+  btn.addEventListener('click', function(){
+    var cur = root.getAttribute('data-theme');
+    if (!cur) {
+      var sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      cur = sysDark ? 'dark' : 'light';
+    }
+    var next = cur === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('jos-theme', next); } catch(e){}
+  });
+
+  /* ---------- reveal buttons ---------- */
+  document.querySelectorAll('[data-reveal]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var box = document.getElementById(b.getAttribute('data-reveal'));
+      var show = box.hidden;
+      box.hidden = !show;
+      b.textContent = show ? 'Hide' : 'Reveal';
+    });
+  });
+
+  /* ---------- scroll spy ---------- */
+  var links = Array.prototype.slice.call(document.querySelectorAll('#toc a'));
+  var targets = links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function spy(){
+    var probe = 140, best = 0;
+    for (var i = 0; i < targets.length; i++) {
+      if (targets[i] && targets[i].getBoundingClientRect().top <= probe) best = i;
+    }
+    links.forEach(function(a, i){
+      if (i === best) a.setAttribute('aria-current','true');
+      else a.removeAttribute('aria-current');
+    });
+  }
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){ spy(); ticking = false; });
+  }, {passive:true});
+  spy();
+
+  /* ---------- 02: construction tracer ---------- */
+  var STEPS = [
+    ['Circle is initialized: superclasses first', 'Loading Circle requires Round, which requires Shape. Static initialization runs top-down through the hierarchy, once per class, before any instance exists.'],
+    ['Shape: static block', 'Shape is the topmost class, so its static initializer runs first.'],
+    ['Round: static block', 'Then Round. Static state for the whole hierarchy is now ready.'],
+    ['Circle: static block', 'And Circle. All static initialization is complete before construction begins.'],
+    ['Allocate: all instance fields zeroed', 'id = null, sides = 0, r = 0.0. The object already has runtime type Circle, so virtual calls made from here on dispatch to Circle’s overrides.'],
+    ['Circle(double) invoked, delegates to super()', 'The constructor body has not started. Its first action is the superclass call, explicit or implicit.'],
+    ['Round() invoked, delegates to super()', 'Chaining continues upward before any initializer anywhere runs.'],
+    ['Shape: field id = init(...)', 'Shape’s own initializers now run, in source order.'],
+    ['Shape: instance block', 'Field initializers and instance blocks are one interleaved sequence in source order, not two phases.'],
+    ['Shape: ctor body', 'Shape is fully constructed. Control returns to Round.'],
+    ['Round: field sides = init(...)', 'Now Round’s initializers run — after its superclass completed.'],
+    ['Round: ctor body', 'Round is fully constructed. Control returns to Circle.'],
+    ['Circle: field r = init(...)', 'Circle’s field initializer runs and assigns its declared value.'],
+    ['Circle: instance block', 'Then Circle’s instance block, in source order.'],
+    ['Circle: ctor body — this.r = r', 'Only now does the constructor body run, overwriting the field initializer’s value with the argument. This is why a field initializer and a constructor assignment to the same field are not redundant: the constructor wins.'],
+    ['Construction complete', 'Every field holds its intended value. Any virtual call made before this point could have observed defaults.']
+  ];
+  var tList = document.getElementById('traceList');
+  var tNote = document.getElementById('traceNote');
+  var tAt = 0;
+  STEPS.forEach(function(s, i){
+    var li = document.createElement('li');
+    li.innerHTML = '<span class="i">' + String(i+1).padStart(2,'0') + '</span><span>' + s[0] + '</span>';
+    tList.appendChild(li);
+  });
+  var tItems = Array.prototype.slice.call(tList.children);
+  function paint(){
+    tItems.forEach(function(li, i){
+      li.className = i < tAt ? 'done' : (i === tAt ? 'now' : '');
+    });
+    tNote.textContent = STEPS[tAt][1];
+    document.getElementById('tPrev').disabled = tAt === 0;
+    document.getElementById('tNext').disabled = tAt === STEPS.length - 1;
+  }
+  document.getElementById('tNext').addEventListener('click', function(){ if (tAt < STEPS.length-1) { tAt++; paint(); } });
+  document.getElementById('tPrev').addEventListener('click', function(){ if (tAt > 0) { tAt--; paint(); } });
+  document.getElementById('tAll').addEventListener('click', function(){ tAt = STEPS.length-1; paint(); });
+  document.getElementById('tReset').addEventListener('click', function(){ tAt = 0; paint(); });
+  paint();
+
+  /* ---------- 04: dispatch resolver ---------- */
+  var CHAIN = ['Shape','Round','Circle'];
+  var dSel = document.getElementById('dType');
+  var rSel = document.getElementById('rType');
+  var cSel = document.getElementById('callSel');
+  var dOut = document.getElementById('dispatchOut');
+
+  function subtypesOf(t){ return CHAIN.slice(CHAIN.indexOf(t)); }
+
+  function fillRuntime(){
+    var keep = rSel.value;
+    var opts = subtypesOf(dSel.value);
+    rSel.innerHTML = '';
+    opts.forEach(function(t){
+      var o = document.createElement('option');
+      o.value = t; o.textContent = t;
+      rSel.appendChild(o);
+    });
+    rSel.value = opts.indexOf(keep) >= 0 ? keep : opts[opts.length - 1];
+  }
+
+  function resolve(){
+    var D = dSel.value, R = rSel.value, call = cSel.value;
+    var expr, compile, runtime, why;
+
+    if (call === 'draw') {
+      expr = 'x.draw()';
+      compile = 'Shape.draw()';
+      runtime = R + '.draw()';
+      why = 'draw() is declared in Shape, so it is visible through any of the three declared types. All three classes override it, so the JVM selects the override belonging to the runtime type — ' + R + '. This is ordinary virtual dispatch: the declared type ' + D + ' had no influence on which body ran.';
+    }
+    else if (call === 'scale_int') {
+      expr = 'x.scale(2)';
+      if (D === 'Shape') {
+        compile = 'Shape.scale(double)';
+        runtime = 'Shape.scale(double)';
+        why = 'Through a Shape reference only scale(double) is visible — Round.scale(int) is an overload, and overloads declared in a subclass are not part of the supertype’s API. So the compiler widens int to double and fixes the signature scale(double). Nothing overrides that signature, so Shape’s body runs even though the object is a ' + R + '. Adding an overload to a subclass can never affect a call made through the supertype.';
+      } else {
+        compile = 'Round.scale(int)';
+        runtime = 'Round.scale(int)';
+        why = 'Through a ' + D + ' reference both scale(int) and scale(double) are visible. Phase 1 admits both — scale(int) by identity, scale(double) by widening — and the most-specific rule prefers int, since int is convertible to double but not the reverse. Round.scale(int) is not overridden anywhere, so its body runs.';
+      }
+    }
+    else if (call === 'scale_dbl') {
+      expr = 'x.scale(2.0)';
+      compile = 'Shape.scale(double)';
+      runtime = 'Shape.scale(double)';
+      why = 'The argument’s static type is double. scale(int) is not applicable — narrowing double to int is never implicit — so scale(double) is the only candidate regardless of the declared type. No subclass overrides it, so Shape’s body runs.';
+    }
+    else {
+      expr = 'x.radius()';
+      if (D === 'Circle') {
+        compile = 'Circle.radius()';
+        runtime = 'Circle.radius()';
+        why = 'radius() is declared in Circle and the declared type is Circle, so the call compiles and dispatches to the only implementation.';
+      } else {
+        compile = null;
+        runtime = null;
+        why = 'radius() is declared only in Circle, and the declared type is ' + D + '. The member is not in ' + D + '’s API, so the compiler rejects the call — even though the object at runtime is a ' + R + ' and does have the method. The declared type determines what you may name; only a cast such as ((Circle) x).radius() makes it callable, and that cast is checked at runtime.';
+      }
+    }
+
+    var html = '<span class="lbl">Declared ' + D + ' &nbsp;·&nbsp; runtime ' + R + ' &nbsp;·&nbsp; ' + expr + '</span>';
+    if (compile === null) {
+      html += '<span class="bad">error: cannot find symbol — method radius() in class ' + D + '</span>';
+    } else {
+      html += 'compile-time signature &nbsp; <span class="ok">' + compile + '</span><br>';
+      html += 'body executed &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="ok">' + runtime + '</span>';
+    }
+    html += '<hr><span class="why">' + why + '</span>';
+    dOut.innerHTML = html;
+  }
+
+  dSel.addEventListener('change', function(){ fillRuntime(); resolve(); });
+  rSel.addEventListener('change', resolve);
+  cSel.addEventListener('change', resolve);
+  fillRuntime();
+  resolve();
+
+  /* ---------- 07: variance explorer ---------- */
+  var VAR_ROWS = [
+    { v:'rt', snip:'Object[] a = new String[1];  a[0] = 42;',
+      why:'Assignment compiles: arrays are <em>covariant</em>, so String[] is a subtype of Object[]. The store then fails at runtime with ArrayStoreException, because every array carries its component type and checks each store against it. Covariant arrays are unsound, and this runtime check is the patch.' },
+    { v:'err', snip:'List&lt;Object&gt; l = new ArrayList&lt;String&gt;();',
+      why:'Rejected. Generics are <em>invariant</em>: List&lt;String&gt; is not a subtype of List&lt;Object&gt;. Were it allowed, l.add(42) would compile and corrupt a list of Strings — exactly the array hole, but with no runtime check available to catch it, since type arguments are erased.' },
+    { v:'err', snip:'List&lt;? extends Number&gt; l = List.of(1, 2);  l.add(3);',
+      why:'The assignment is fine; the add is rejected. l might be a List&lt;Integer&gt;, a List&lt;Double&gt;, or a List&lt;Long&gt; — the compiler knows only that the element type is <em>some</em> subtype of Number, so no argument can be proven safe to add. You may read Number out; you may write nothing in except null.' },
+    { v:'ok', snip:'List&lt;? super Integer&gt; l = new ArrayList&lt;Number&gt;();  l.add(42);',
+      why:'Both compile. The element type is some supertype of Integer, so any Integer is assignable to it and add is safe. Reading, however, yields only Object: the compiler cannot narrow further, so Integer i = l.get(0) would be rejected. This is the mirror image of the previous row — together they are PECS.' },
+    { v:'err', snip:'if (x instanceof List&lt;String&gt;) { ... }',
+      why:'Rejected: illegal generic type for instanceof. Type arguments are erased, so at runtime there is nothing to test — a List&lt;String&gt; and a List&lt;Integer&gt; are the same class. Only the unbounded wildcard form, x instanceof List&lt;?&gt;, or the raw List, is permitted.' },
+    { v:'err', snip:'List&lt;String&gt;[] arr = new List&lt;String&gt;[10];',
+      why:'Rejected: generic array creation. Arrays need a reifiable component type for their runtime store check, and List&lt;String&gt; is not reifiable. If it were allowed, the check would compare against the erased List and let a List&lt;Integer&gt; through undetected.' },
+    { v:'rt', snip:'List raw = new ArrayList&lt;Integer&gt;();  raw.add("oops");',
+      why:'Compiles with an unchecked warning — raw types opt out of generic checking entirely. The String is stored. The failure surfaces later, as a ClassCastException at whatever site the compiler inserted an implicit cast to Integer, typically a line that looks blameless. This is why unchecked warnings are worth treating as errors.' },
+    { v:'ok', snip:'static &lt;T&gt; void copy(List&lt;? super T&gt; dst, List&lt;? extends T&gt; src)',
+      why:'The PECS signature. src <em>produces</em> T values so it is bounded above; dst <em>consumes</em> them so it is bounded below. This accepts the widest set of caller argument types while keeping the body type-safe — for example copying a List&lt;Integer&gt; into a List&lt;Number&gt;.' }
+  ];
+  var LABELS = { ok:'compiles', err:'compile error', rt:'runtime failure' };
+  var vl = document.getElementById('vlist');
+  VAR_ROWS.forEach(function(r, i){
+    var li = document.createElement('li');
+    var id = 'vwhy' + i;
+    li.innerHTML =
+      '<button class="vrow" type="button" aria-expanded="false" aria-controls="' + id + '">' +
+        '<span class="pill ' + r.v + '">' + LABELS[r.v] + '</span>' +
+        '<span class="snip">' + r.snip + '</span>' +
+      '</button>' +
+      '<div class="vwhy" id="' + id + '" hidden>' + r.why + '</div>';
+    vl.appendChild(li);
+    var b = li.querySelector('.vrow'), d = li.querySelector('.vwhy');
+    b.addEventListener('click', function(){
+      var open = d.hidden;
+      d.hidden = !open;
+      b.setAttribute('aria-expanded', String(open));
+    });
+  });
+  // open the first row so the panel is not empty at rest
+  vl.querySelector('.vrow').click();
+
+  /* ---------- 08: contract checker ---------- */
+  var boxes = {
+    reflexive: document.getElementById('cReflexive'),
+    symmetric: document.getElementById('cSymmetric'),
+    transitive: document.getElementById('cTransitive'),
+    hash: document.getElementById('cHash')
+  };
+  var cOut = document.getElementById('contractOut');
+  var CONSEQ = {
+    reflexive: ['x.equals(x) is false',
+      'list.contains(x) returns false for an element the list holds, and list.remove(x) cannot delete it. The object becomes unreachable by value in every collection that searches by equals. Collections.singletonList(x).contains(x) — which the framework treats as trivially true — returns false.'],
+    symmetric: ['x.equals(y) but not y.equals(x)',
+      'Results depend on operand order, which callers do not control. list.contains(x) succeeds or fails depending on the list’s iteration order, so the same logical query gives different answers on an ArrayList and a LinkedList holding the same elements. No exception is thrown.'],
+    transitive: ['a.equals(b), b.equals(c), but not a.equals(c)',
+      'Equality is no longer an equivalence relation, so "the set of things equal to a" is not well defined. Set membership becomes dependent on insertion order, and deduplicating a collection yields different results for different permutations of the same input.'],
+    hash: ['equal objects with different hashCode values',
+      'HashMap and HashSet locate a candidate bucket from the hash before comparing with equals. Two equal objects with different hashes land in different buckets and are never compared, so set.add(x); set.contains(y) returns false for an equal y, and a HashSet can hold two elements that report themselves equal. This is the single most common violation, and it is what you introduce by overriding equals and leaving hashCode inherited.']
+  };
+  function checkContract(){
+    var broken = Object.keys(boxes).filter(function(k){ return !boxes[k].checked; });
+    if (!broken.length) {
+      cOut.innerHTML = '<span class="lbl">Verdict</span><span class="ok">contract satisfied</span>' +
+        '<hr><span class="why">HashMap, HashSet, TreeSet, List.contains, List.indexOf, Collections.frequency and every other equals- or hash-based operation behave as documented. This is the only configuration in which the collections framework gives you its stated guarantees — the contract is a precondition of using it, not a recommendation.</span>';
+      return;
+    }
+    var html = '<span class="lbl">' + broken.length + ' clause' + (broken.length > 1 ? 's' : '') + ' violated</span>';
+    broken.forEach(function(k, i){
+      if (i) html += '<hr>';
+      html += '<span class="bad">' + CONSEQ[k][0] + '</span><br><span class="why">' + CONSEQ[k][1] + '</span>';
+    });
+    html += '<hr><span class="why">Note that none of these produce an exception at the point of the violation. The collection simply answers questions incorrectly, which is why <code>equals</code> and <code>hashCode</code> deserve unit tests as thorough as any other logic.</span>';
+    cOut.innerHTML = html;
+  }
+  Object.keys(boxes).forEach(function(k){ boxes[k].addEventListener('change', checkContract); });
+  checkContract();
+
+})();
+</script>
 </body>
 </html>
